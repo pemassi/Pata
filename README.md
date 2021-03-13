@@ -1,5 +1,7 @@
 # DataModelBuilder
-[![Release](https://jitpack.io/v/pemassi/DataModelBuilder.svg)](https://jitpack.io/#pemassi/DataModelBuilder)
+[![Release](https://jitpack.io/v/pemassi/DataModelBuilder.svg)](https://jitpack.io/#pemassi/DataModelBuilder)]
+
+![Gradle CI](https://github.com/pemassi/DataModelBuilder/actions/workflows/gradle-ci/badge.svg)
 
 Data Model Builder for Java / Kotlin(JVM)
 
