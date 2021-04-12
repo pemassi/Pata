@@ -1,8 +1,8 @@
-# DataModelBuilder
+# Data Model Builder
 ![Release](https://jitpack.io/v/pemassi/DataModelBuilder.svg)
 ![Gradle CI](https://github.com/pemassi/DataModelBuilder/actions/workflows/gradle-ci.yml/badge.svg)
 
-Data Model Builder for Java / Kotlin(JVM)
+Data Model Builder for Kotlin(JVM)
 
 ## Setup
 Add the JitPack repository in your build.gradle (top level module):

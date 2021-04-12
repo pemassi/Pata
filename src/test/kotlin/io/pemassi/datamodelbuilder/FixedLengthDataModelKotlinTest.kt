@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.nio.charset.Charset
 
-internal class FixedLengthDataModelTest
+internal class FixedLengthDataModelKotlinTest
 {
     val EUC_KR = Charset.forName("EUC_KR")
 
@@ -111,6 +111,5 @@ internal class FixedLengthDataModelTest
         assertEquals(created.j.trim(), parsed.j.trim())
 
         assertEquals(created.toString(EUC_KR), created.toString(EUC_KR))
-
     }
 }

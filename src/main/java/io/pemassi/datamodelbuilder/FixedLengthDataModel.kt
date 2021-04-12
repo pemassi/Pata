@@ -5,10 +5,11 @@
 
 package io.pemassi.datamodelbuilder
 
+import de.m3y.kformat.Table
+import de.m3y.kformat.table
 import io.pemassi.datamodelbuilder.annotations.FixedDataField
+import io.pemassi.datamodelbuilder.exceptions.DataModelSizeExceedException
 import java.nio.charset.Charset
-import java.util.*
-import kotlin.collections.HashMap
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.memberProperties
@@ -50,27 +51,35 @@ abstract class FixedLengthDataModel(
     val totalLength: Int by lazy {
         var sum = 0
         propertyDatabase.forEach {
-            sum += it.second.length
+            sum += it.second.size
         }
         sum
     }
 
     fun toLog(): String
     {
-        val buffer = StringBuffer(this::class.simpleName + " Fixed Length Data\n")
+        return table {
+            header("Name(Variable Name)", "Expected Size", "Actual Size", "Value")
 
-        propertyDatabase.forEach {
-            val (property, annotation) = it
+            propertyDatabase.forEach {
+                val (property, annotation) = it
 
-            val name = annotation.name
-            val length = annotation.length
-            val variableName = property.name
-            val value = property.getter.call(this)
+                val name = annotation.name
+                val expectedSize = annotation.size
+                val variableName = property.name
+                val value = property.getter.call(this@FixedLengthDataModel).toString()
+                val valueByteArray = value.toByteArray(charset)
+                val actualSize = valueByteArray.size
 
-            buffer.append("$name($variableName, ${property.returnType}) : [$length][$value]\n")
-        }
+                row("$name($variableName)", expectedSize, actualSize, "[$value]")
+            }
 
-        return buffer.toString()
+            hints {
+                borderStyle = Table.BorderStyle.SINGLE_LINE
+                alignment(3, Table.Hints.Alignment.LEFT)
+            }
+
+        }.render(StringBuilder("'${this::class.simpleName}' Fixed Length Data Model\n")).toString()
     }
 
     override fun toString(): String
@@ -84,22 +93,23 @@ abstract class FixedLengthDataModel(
 
         propertyDatabase.forEach {
             val (property, annotation) = it
-            val length = annotation.length
+
+            val name = annotation.name
+            val expectedSize = annotation.size
+            val variableName = property.name
             val value = property.getter.call(this).toString()
             val valueByteArray = value.toByteArray(charset)
-            val valueLength = valueByteArray.size
+            val actualSize = valueByteArray.size
 
-            if (valueLength > length)
-                throw InvalidPropertiesFormatException(
-                    """
-                    Property value is exceeded length.
-                    Name: ${annotation.name}(${property.name})
-                    Current Length: $valueLength
-                    Expected Length: $length
-                    
-                    [DATA]
-                    ${this.toLog()}
-                """.trimIndent()
+            if (actualSize > expectedSize)
+                throw DataModelSizeExceedException(
+                    modelName = this::class.simpleName ?: "",
+                    dataName = name,
+                    variableName = variableName,
+                    expectedSize = expectedSize,
+                    actualSize = actualSize,
+                    data = value,
+                    dataTable = this.toLog()
                 )
 
             //TODO: Need to work on mode.
@@ -110,9 +120,9 @@ abstract class FixedLengthDataModel(
                     Int::class.javaObjectType,
                     Int::class.javaPrimitiveType,
                     Long::class.javaObjectType,
-                    Long::class.javaPrimitiveType -> padStart(value, length - valueLength, '0')
+                    Long::class.javaPrimitiveType -> padStart(value, expectedSize - actualSize, '0')
 
-                    else -> padEnd(value, length - valueLength, ' ')
+                    else -> padEnd(value, expectedSize - actualSize, ' ')
                 }
             )
         }
@@ -165,7 +175,7 @@ abstract class FixedLengthDataModel(
 
             ret.propertyDatabase.forEach {
                 val (property, annotation) = it
-                val length = annotation.length
+                val length = annotation.size
                 val splitData = String(protocolData, pos, length, charset)
                 val inputData = when (property.returnType.javaType)
                 {
@@ -195,3 +205,43 @@ abstract class FixedLengthDataModel(
         }
     }
 }
+
+class TestProtocol : FixedLengthDataModel()
+{
+    @FixedDataField(5, "A", 5)
+    var a: String = ""
+
+    @FixedDataField(3, "B", 5)
+    var b: String = ""
+
+    @FixedDataField(2, "C", 5)
+    var c: String = ""
+
+    @FixedDataField(4, "D", 5)
+    var d: String = ""
+
+    @FixedDataField(1, "E", 5)
+    var e: String = ""
+
+    @FixedDataField(6, "F", 5)
+    var f: String = ""
+
+    @FixedDataField(10, "G", 5)
+    var g: Int = 0
+
+    @FixedDataField(8, "H", 5)
+    var h: String = ""
+
+    @FixedDataField(9, "I", 5)
+    var i: String = ""
+
+    @FixedDataField(7, "J", 5)
+    var j: String = ""
+}
+
+fun main()
+{
+    print(TestProtocol().toLog())
+}
+
+

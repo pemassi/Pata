@@ -16,12 +16,15 @@ repositories {
 
 dependencies {
     //Kotlin Libs
-    implementation "org.jetbrains.kotlin:kotlin-stdlib"
-    implementation "org.jetbrains.kotlin:kotlin-reflect"
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib'
+    implementation 'org.jetbrains.kotlin:kotlin-reflect'
+    
+    //Table Print
+    implementation 'de.m3y.kformat:kformat:0.7'
 
     //Test Libs
-    testImplementation "org.junit.jupiter:junit-jupiter:5.4.2"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
 
 test {
