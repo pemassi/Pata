@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2021 Kyungyoon Kim.
+ * Copyright (c) 2021 Kyungyoon Kim(pemassi).
  * All rights reserved.
  */
 
-package io.pemassi.datamodelbuilder.exceptions
+package io.pemassi.pata.exceptions
 
 /**
  * This exception will be thrown when data size is higher than expected size.

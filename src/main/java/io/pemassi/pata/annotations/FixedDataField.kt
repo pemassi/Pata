@@ -3,10 +3,10 @@
  * All rights reserved.
  */
 
-package io.pemassi.datamodelbuilder.annotations
+package io.pemassi.pata.annotations
 
-import io.pemassi.datamodelbuilder.interfaces.DataPadding
-import io.pemassi.datamodelbuilder.model.BasicDataPadding
+import io.pemassi.pata.interfaces.PataPadding
+import io.pemassi.pata.models.BasicDataPadding
 import kotlin.reflect.KClass
 
 /**
@@ -15,7 +15,7 @@ import kotlin.reflect.KClass
  * @param order This data field order, all data field will be sorted by [order].
  * @param name Data name
  * @param size Data Size(expected size)
- * @param padding You can set custom padding method with class that inherited with [DataPadding] interface.
+ * @param padding You can set custom padding method with class that inherited with [PataPadding] interface.
  */
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.PROPERTY)
@@ -23,5 +23,5 @@ annotation class FixedDataField(
     val order: Int,
     val name: String,
     val size: Int,
-    val padding: KClass<out DataPadding> = BasicDataPadding::class,
+    val padding: KClass<out PataPadding> = BasicDataPadding::class,
 )

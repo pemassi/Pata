@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-package io.pemassi.datamodelbuilder.exceptions
+package io.pemassi.pata.exceptions
 
 /**
  * This exception will be thrown when data size is lower than expected size.

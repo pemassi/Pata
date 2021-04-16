@@ -3,9 +3,9 @@
  * All rights reserved.
  */
 
-package io.pemassi.datamodelbuilder.model
+package io.pemassi.pata.models
 
-import io.pemassi.datamodelbuilder.interfaces.DataPadding
+import io.pemassi.pata.interfaces.PataPadding
 import java.nio.charset.Charset
 import kotlin.reflect.KType
 import kotlin.reflect.jvm.javaType
@@ -14,7 +14,7 @@ import kotlin.reflect.jvm.javaType
  * This padding method will right-justify the data and padding '0' for number values([Int], [Long]),
  * expect that, will left-justify data and padding ' '(space, 0x20).
  */
-class BasicDataPadding: DataPadding {
+class BasicDataPadding: PataPadding {
     override fun padding(data: Any, expectedSize: Int, type: KType, charset: Charset): String {
 
         val value = data.toString()

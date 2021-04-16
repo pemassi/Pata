@@ -3,17 +3,17 @@
  * All rights reserved.
  */
 
-package io.pemassi.datamodelbuilder
+package io.pemassi.pata
 
-import io.pemassi.datamodelbuilder.annotations.FixedDataField
-import io.pemassi.datamodelbuilder.interfaces.DataPadding
+import io.pemassi.pata.annotations.FixedDataField
+import io.pemassi.pata.interfaces.PataPadding
 import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.nio.charset.Charset
 import kotlin.reflect.KType
 
-internal class FixedLengthDataModelKotlinTest
+internal class FixedLengthPataModelKotlinTest
 {
     val EUC_KR = Charset.forName("EUC_KR")
 
@@ -122,7 +122,7 @@ internal class FixedLengthDataModelKotlinTest
 
     class WiredDataModel: FixedLengthDataModel()
     {
-        class WiredDataPadding: DataPadding {
+        class WiredDataPadding: PataPadding {
             override fun padding(data: Any, expectedSize: Int, type: KType, charset: Charset): String {
                 return data.toString().padStart(expectedSize, '-')
             }

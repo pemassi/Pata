@@ -3,13 +3,14 @@
  * All rights reserved.
  */
 
-package io.pemassi.datamodelbuilder
+package io.pemassi.pata.models
 
 import de.m3y.kformat.Table
 import de.m3y.kformat.table
-import io.pemassi.datamodelbuilder.annotations.FixedDataField
-import io.pemassi.datamodelbuilder.exceptions.DataModelSizeExceedException
-import io.pemassi.datamodelbuilder.exceptions.DataModelSizeNeedMoreException
+import io.pemassi.pata.annotations.FixedDataField
+import io.pemassi.pata.exceptions.DataModelSizeExceedException
+import io.pemassi.pata.exceptions.DataModelSizeNeedMoreException
+import io.pemassi.pata.interfaces.PataModel
 import java.nio.charset.Charset
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty
@@ -20,28 +21,15 @@ import kotlin.reflect.jvm.javaType
 private val cachedPropertyDatabase =
     HashMap<KClass<*>, List<Pair<KMutableProperty<*>, FixedDataField>>>()
 
-enum class PaddingMode
-{
-    /**
-     * If field' length is less than set length, it will pad character to fit in.
-     */
-    LENIENT,
-
-    /**
-     * If field's length is less or bigger than set length, throw exception.
-     */
-    STRICT
-}
-
 /**
  * Declare this class or data class is fixed length data model.
  *
  * The property, that you want use part of data, should be annotated with [FixedDataField].
  */
-abstract class FixedLengthDataModel(
+abstract class FixedLengthPataModel(
     val modelCharset: Charset = Charset.defaultCharset(),
     val paddingMode: PaddingMode = PaddingMode.LENIENT,
-)
+): PataModel
 {
     val propertyDatabase: List<Pair<KMutableProperty<*>, FixedDataField>> =
         cachedPropertyDatabase.getOrPut(this::class) {
@@ -71,7 +59,7 @@ abstract class FixedLengthDataModel(
                 val name = annotation.name
                 val expectedSize = annotation.size
                 val variableName = property.name
-                val value = property.getter.call(this@FixedLengthDataModel).toString()
+                val value = property.getter.call(this@FixedLengthPataModel).toString()
                 val valueByteArray = value.toByteArray(modelCharset)
                 val actualSize = valueByteArray.size
 
@@ -188,11 +176,11 @@ abstract class FixedLengthDataModel(
     companion object
     {
         /**
-         * Parsing byte data and convert into [FixedLengthDataModel].
+         * Parsing byte data and convert into [FixedLengthPataModel].
          *
          * @param charset Charset will be used to convert byte array to string data.
          */
-        inline fun <reified T : FixedLengthDataModel> parse(
+        inline fun <reified T : FixedLengthPataModel> parse(
             protocolData: ByteArray,
             charset: Charset? = null
         ): T
@@ -224,11 +212,11 @@ abstract class FixedLengthDataModel(
         }
 
         /**
-         * Parsing string data and convert into [FixedLengthDataModel].
+         * Parsing string data and convert into [FixedLengthPataModel].
          *
          * @param charset Charset will be used to convert string to byte array data, in order to precise size counting.
          */
-        inline fun <reified T : FixedLengthDataModel> parse(
+        inline fun <reified T : FixedLengthPataModel> parse(
             protocolData: String,
             charset: Charset? = null
         ): T
