@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Kyungyoon Kim.
+ * Copyright (c) 2021 Kyungyoon Kim(pemassi).
  * All rights reserved.
  */
 
@@ -9,9 +9,11 @@ import de.m3y.kformat.Table
 import de.m3y.kformat.table
 import io.pemassi.datamodelbuilder.annotations.FixedDataField
 import io.pemassi.datamodelbuilder.exceptions.DataModelSizeExceedException
+import io.pemassi.datamodelbuilder.exceptions.DataModelSizeNeedMoreException
 import java.nio.charset.Charset
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty
+import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaType
 
@@ -35,7 +37,7 @@ enum class PaddingMode
  *
  */
 abstract class FixedLengthDataModel(
-    val charset: Charset = Charset.defaultCharset(),
+    val defaultCharset: Charset = Charset.defaultCharset(),
     val paddingMode: PaddingMode = PaddingMode.LENIENT,
 )
 {
@@ -68,7 +70,7 @@ abstract class FixedLengthDataModel(
                 val expectedSize = annotation.size
                 val variableName = property.name
                 val value = property.getter.call(this@FixedLengthDataModel).toString()
-                val valueByteArray = value.toByteArray(charset)
+                val valueByteArray = value.toByteArray(defaultCharset)
                 val actualSize = valueByteArray.size
 
                 row("$name($variableName)", expectedSize, actualSize, "[$value]")
@@ -82,14 +84,27 @@ abstract class FixedLengthDataModel(
         }.render(StringBuilder("'${this::class.simpleName}' Fixed Length Data Model\n")).toString()
     }
 
+    /**
+     * WARN - This method will be overridden when class is Kotlin's data class.
+     */
     override fun toString(): String
     {
-        return toString(charset)
+        return toDataString(defaultCharset)
     }
 
-    fun toString(charset: Charset): String
+    fun toString(charset: Charset = defaultCharset): String
     {
-        val buffer = StringBuffer()
+        return toDataString(charset)
+    }
+
+    /**
+     * Convert data model into fixed length string.
+     *
+     * @param charset
+     */
+    fun toDataString(charset: Charset = defaultCharset): String
+    {
+        val builder = StringBuilder()
 
         propertyDatabase.forEach {
             val (property, annotation) = it
@@ -100,6 +115,7 @@ abstract class FixedLengthDataModel(
             val value = property.getter.call(this).toString()
             val valueByteArray = value.toByteArray(charset)
             val actualSize = valueByteArray.size
+            val dataPadding = annotation.padding.createInstance()
 
             if (actualSize > expectedSize)
                 throw DataModelSizeExceedException(
@@ -112,22 +128,26 @@ abstract class FixedLengthDataModel(
                     dataTable = this.toLog()
                 )
 
-            //TODO: Need to work on mode.
+            if(paddingMode == PaddingMode.STRICT)
+            {
+                if(actualSize != expectedSize)
+                    throw DataModelSizeNeedMoreException(
+                        modelName = this::class.simpleName ?: "",
+                        dataName = name,
+                        variableName = variableName,
+                        expectedSize = expectedSize,
+                        actualSize = actualSize,
+                        data = value,
+                        dataTable = this.toLog()
+                    )
+            }
 
-            buffer.append(
-                when (property.returnType.javaType)
-                {
-                    Int::class.javaObjectType,
-                    Int::class.javaPrimitiveType,
-                    Long::class.javaObjectType,
-                    Long::class.javaPrimitiveType -> padStart(value, expectedSize - actualSize, '0')
-
-                    else -> padEnd(value, expectedSize - actualSize, ' ')
-                }
+            builder.append(
+                dataPadding.padding(value, expectedSize, property.returnType, charset)
             )
         }
 
-        return buffer.toString()
+        return builder.toString()
     }
 
     private fun padStart(str: String, amount: Int, padChar: Char): String
@@ -171,7 +191,7 @@ abstract class FixedLengthDataModel(
         ): T
         {
             var pos = 0
-            val ret = T::class.constructors.first().call()
+            val ret = T::class.createInstance()
 
             ret.propertyDatabase.forEach {
                 val (property, annotation) = it
@@ -205,43 +225,3 @@ abstract class FixedLengthDataModel(
         }
     }
 }
-
-class TestProtocol : FixedLengthDataModel()
-{
-    @FixedDataField(5, "A", 5)
-    var a: String = ""
-
-    @FixedDataField(3, "B", 5)
-    var b: String = ""
-
-    @FixedDataField(2, "C", 5)
-    var c: String = ""
-
-    @FixedDataField(4, "D", 5)
-    var d: String = ""
-
-    @FixedDataField(1, "E", 5)
-    var e: String = ""
-
-    @FixedDataField(6, "F", 5)
-    var f: String = ""
-
-    @FixedDataField(10, "G", 5)
-    var g: Int = 0
-
-    @FixedDataField(8, "H", 5)
-    var h: String = ""
-
-    @FixedDataField(9, "I", 5)
-    var i: String = ""
-
-    @FixedDataField(7, "J", 5)
-    var j: String = ""
-}
-
-fun main()
-{
-    print(TestProtocol().toLog())
-}
-
-

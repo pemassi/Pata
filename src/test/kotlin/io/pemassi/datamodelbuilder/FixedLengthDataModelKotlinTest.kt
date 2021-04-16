@@ -1,21 +1,23 @@
 /*
- * Copyright (c) 2021 Kyungyoon Kim.
+ * Copyright (c) 2021 Kyungyoon Kim(pemassi).
  * All rights reserved.
  */
 
 package io.pemassi.datamodelbuilder
 
 import io.pemassi.datamodelbuilder.annotations.FixedDataField
+import io.pemassi.datamodelbuilder.interfaces.DataPadding
 import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.nio.charset.Charset
+import kotlin.reflect.KType
 
 internal class FixedLengthDataModelKotlinTest
 {
     val EUC_KR = Charset.forName("EUC_KR")
 
-    class TestProtocol : FixedLengthDataModel()
+    class StandardProtocol : FixedLengthDataModel()
     {
         @FixedDataField(5, "A", 5)
         var a: String = ""
@@ -46,25 +48,28 @@ internal class FixedLengthDataModelKotlinTest
 
         @FixedDataField(7, "J", 5)
         var j: String = ""
-    }
 
-    val correctOrder = listOf("E", "C", "B", "D", "A", "F", "J", "H", "I", "G")
-    val parseData = "E    C    B    D    A    F    J    H    I    00001"
+        companion object
+        {
+            val correctOrder = listOf("E", "C", "B", "D", "A", "F", "J", "H", "I", "G")
+            val parseData = "E    C    B    D    A    F    J    H    I    00001"
+        }
+    }
 
     @Test
     fun `Order Protocol In Order`()
     {
         //When created
-        val createdObject = TestProtocol()
+        val createdObject = StandardProtocol()
         assertArrayEquals(
-            correctOrder.toTypedArray(),
+            StandardProtocol.correctOrder.toTypedArray(),
             createdObject.propertyDatabase.map { it.second.name }.toTypedArray()
         )
 
         //When parsed
-        val parsedObject = FixedLengthDataModel.parse<TestProtocol>(parseData)
+        val parsedObject = FixedLengthDataModel.parse<StandardProtocol>(StandardProtocol.parseData)
         assertArrayEquals(
-            correctOrder.toTypedArray(),
+            StandardProtocol.correctOrder.toTypedArray(),
             parsedObject.propertyDatabase.map { it.second.name }.toTypedArray()
         )
     }
@@ -73,7 +78,7 @@ internal class FixedLengthDataModelKotlinTest
     fun `Parse correctly`()
     {
         //Test parsed data
-        val parsedObject = FixedLengthDataModel.parse<TestProtocol>(parseData)
+        val parsedObject = FixedLengthDataModel.parse<StandardProtocol>(StandardProtocol.parseData)
         assertEquals(parsedObject.a.trim(), "A")
         assertEquals(parsedObject.b.trim(), "B")
         assertEquals(parsedObject.c.trim(), "C")
@@ -86,18 +91,19 @@ internal class FixedLengthDataModelKotlinTest
         assertEquals(parsedObject.j.trim(), "J")
 
         //Test data is same as parsed data
-        assertEquals(parsedObject.toString(), parseData)
+        assertEquals(parsedObject.toString(), StandardProtocol.parseData)
+        assertEquals(parsedObject.toDataString(), StandardProtocol.parseData)
     }
 
     @Test
     fun `Korean Test`()
     {
         val korean = "한글"
-        val created = TestProtocol().also {
+        val created = StandardProtocol().also {
             it.a = korean
         }
 
-        val parsed = FixedLengthDataModel.parse<TestProtocol>(created.toString(EUC_KR), EUC_KR)
+        val parsed = FixedLengthDataModel.parse<StandardProtocol>(created.toString(EUC_KR), EUC_KR)
 
         assertEquals(created.a.trim(), parsed.a.trim())
         assertEquals(created.b.trim(), parsed.b.trim())
@@ -111,5 +117,54 @@ internal class FixedLengthDataModelKotlinTest
         assertEquals(created.j.trim(), parsed.j.trim())
 
         assertEquals(created.toString(EUC_KR), created.toString(EUC_KR))
+        assertEquals(created.toDataString(EUC_KR), created.toDataString(EUC_KR))
     }
+
+    class WiredDataModel: FixedLengthDataModel()
+    {
+        class WiredDataPadding: DataPadding {
+            override fun padding(data: Any, expectedSize: Int, type: KType, charset: Charset): String {
+                return data.toString().padStart(expectedSize, '-')
+            }
+        }
+
+        @FixedDataField(1, "A", 5, WiredDataPadding::class)
+        var a: String = "A"
+
+        @FixedDataField(2, "B", 5, WiredDataPadding::class)
+        var b: String = "B"
+
+        companion object
+        {
+            val correctPaddedData = "----A----B"
+        }
+    }
+
+    @Test
+    fun `Custom Data Padding Test`()
+    {
+        assertEquals(WiredDataModel.correctPaddedData, WiredDataModel().toString())
+    }
+
+    data class KotlinDataClassModel(
+        @FixedDataField(1, "A", 5)
+        var a: String = "A",
+
+        @FixedDataField(2, "B", 5)
+        var b: String = "B"
+    ): FixedLengthDataModel()
+    {
+        companion object
+        {
+            val correctData = "A    B    "
+        }
+    }
+
+    @Test
+    fun `Kotlin Data Class Test`()
+    {
+        assertEquals(KotlinDataClassModel.correctData, KotlinDataClassModel().toDataString())
+        assertEquals(KotlinDataClassModel.correctData, FixedLengthDataModel.parse<KotlinDataClassModel>(KotlinDataClassModel.correctData).toDataString())
+    }
+
 }

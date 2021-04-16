@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Kyungyoon Kim.
+ * Copyright (c) 2021 Kyungyoon Kim(pemassi).
  * All rights reserved.
  */
 
@@ -11,8 +11,8 @@ import kotlin.reflect.KType
 import kotlin.reflect.jvm.javaType
 
 /**
- * This padding method will right-justify data and padding '0' for number values([Int], [Long]),
- * expect that, will left-justify data and padding ' '(space).
+ * This padding method will right-justify the data and padding '0' for number values([Int], [Long]),
+ * expect that, will left-justify data and padding ' '(space, 0x20).
  */
 class BasicDataPadding: DataPadding {
     override fun padding(data: Any, expectedSize: Int, type: KType, charset: Charset): String {
