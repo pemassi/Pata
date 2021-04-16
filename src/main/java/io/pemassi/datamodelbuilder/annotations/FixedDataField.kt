@@ -12,7 +12,7 @@ import kotlin.reflect.KClass
 /**
  * Declare this property is part of data model(FixedLengthDataModel).
  *
- * @param order The property order
+ * @param order This data field order, all data field will be sorted by [order].
  * @param name Data name
  * @param size Data Size(expected size)
  * @param padding You can set custom padding method with class that inherited with [DataPadding] interface.

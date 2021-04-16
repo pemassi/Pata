@@ -39,7 +39,7 @@ enum class PaddingMode
  * The property, that you want use part of data, should be annotated with [FixedDataField].
  */
 abstract class FixedLengthDataModel(
-    val defaultCharset: Charset = Charset.defaultCharset(),
+    val modelCharset: Charset = Charset.defaultCharset(),
     val paddingMode: PaddingMode = PaddingMode.LENIENT,
 )
 {
@@ -72,7 +72,7 @@ abstract class FixedLengthDataModel(
                 val expectedSize = annotation.size
                 val variableName = property.name
                 val value = property.getter.call(this@FixedLengthDataModel).toString()
-                val valueByteArray = value.toByteArray(defaultCharset)
+                val valueByteArray = value.toByteArray(modelCharset)
                 val actualSize = valueByteArray.size
 
                 row("$name($variableName)", expectedSize, actualSize, "[$value]")
@@ -91,10 +91,10 @@ abstract class FixedLengthDataModel(
      */
     override fun toString(): String
     {
-        return toDataString(defaultCharset)
+        return toDataString(modelCharset)
     }
 
-    fun toString(charset: Charset = defaultCharset): String
+    fun toString(charset: Charset = modelCharset): String
     {
         return toDataString(charset)
     }
@@ -104,7 +104,7 @@ abstract class FixedLengthDataModel(
      *
      * @param charset
      */
-    fun toDataString(charset: Charset = defaultCharset): String
+    fun toDataString(charset: Charset = modelCharset): String
     {
         val builder = StringBuilder()
 
@@ -194,7 +194,7 @@ abstract class FixedLengthDataModel(
          */
         inline fun <reified T : FixedLengthDataModel> parse(
             protocolData: ByteArray,
-            charset: Charset = Charset.defaultCharset()
+            charset: Charset? = null
         ): T
         {
             var pos = 0
@@ -203,7 +203,7 @@ abstract class FixedLengthDataModel(
             ret.propertyDatabase.forEach {
                 val (property, annotation) = it
                 val length = annotation.size
-                val splitData = String(protocolData, pos, length, charset)
+                val splitData = String(protocolData, pos, length, charset ?: ret.modelCharset)
                 val inputData = when (property.returnType.javaType)
                 {
                     Int::class.javaObjectType,
@@ -230,10 +230,12 @@ abstract class FixedLengthDataModel(
          */
         inline fun <reified T : FixedLengthDataModel> parse(
             protocolData: String,
-            charset: Charset = Charset.defaultCharset()
+            charset: Charset? = null
         ): T
         {
-            return parse(protocolData.toByteArray(charset), charset)
+            val ret = T::class.createInstance()
+
+            return parse(protocolData.toByteArray(charset ?: ret.modelCharset), charset)
         }
     }
 }
