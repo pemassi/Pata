@@ -34,7 +34,9 @@ enum class PaddingMode
 }
 
 /**
+ * Declare this class or data class is fixed length data model.
  *
+ * The property, that you want use part of data, should be annotated with [FixedDataField].
  */
 abstract class FixedLengthDataModel(
     val defaultCharset: Charset = Charset.defaultCharset(),
@@ -185,6 +187,11 @@ abstract class FixedLengthDataModel(
 
     companion object
     {
+        /**
+         * Parsing byte data and convert into [FixedLengthDataModel].
+         *
+         * @param charset Charset will be used to convert byte array to string data.
+         */
         inline fun <reified T : FixedLengthDataModel> parse(
             protocolData: ByteArray,
             charset: Charset = Charset.defaultCharset()
@@ -216,6 +223,11 @@ abstract class FixedLengthDataModel(
             return ret
         }
 
+        /**
+         * Parsing string data and convert into [FixedLengthDataModel].
+         *
+         * @param charset Charset will be used to convert string to byte array data, in order to precise size counting.
+         */
         inline fun <reified T : FixedLengthDataModel> parse(
             protocolData: String,
             charset: Charset = Charset.defaultCharset()
