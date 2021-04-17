@@ -6,18 +6,17 @@
 package io.pemassi.pata
 
 import io.pemassi.pata.annotations.FixedDataField
-import io.pemassi.pata.interfaces.PataPadding
+import io.pemassi.pata.models.FixedLengthPataModel
 import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.nio.charset.Charset
-import kotlin.reflect.KType
 
 internal class FixedLengthPataModelKotlinTest
 {
     val EUC_KR = Charset.forName("EUC_KR")
 
-    class StandardProtocol : FixedLengthDataModel()
+    class StandardProtocol : FixedLengthPataModel()
     {
         @FixedDataField(5, "A", 5)
         var a: String = ""
@@ -57,8 +56,10 @@ internal class FixedLengthPataModelKotlinTest
     }
 
     @Test
-    fun `Order Protocol In Order`()
+    fun `Deserialize Protocol In Order`()
     {
+        val pata = Pata()
+
         //When created
         val createdObject = StandardProtocol()
         assertArrayEquals(
@@ -67,7 +68,7 @@ internal class FixedLengthPataModelKotlinTest
         )
 
         //When parsed
-        val parsedObject = FixedLengthDataModel.parse<StandardProtocol>(StandardProtocol.parseData)
+        val parsedObject = pata.fromString<StandardProtocol>(StandardProtocol.parseData)
         assertArrayEquals(
             StandardProtocol.correctOrder.toTypedArray(),
             parsedObject.propertyDatabase.map { it.second.name }.toTypedArray()
@@ -75,10 +76,12 @@ internal class FixedLengthPataModelKotlinTest
     }
 
     @Test
-    fun `Parse correctly`()
+    fun `Serialize correctly`()
     {
+        val pata = Pata()
+
         //Test parsed data
-        val parsedObject = FixedLengthDataModel.parse<StandardProtocol>(StandardProtocol.parseData)
+        val parsedObject = pata.fromString<StandardProtocol>(StandardProtocol.parseData)
         assertEquals(parsedObject.a.trim(), "A")
         assertEquals(parsedObject.b.trim(), "B")
         assertEquals(parsedObject.c.trim(), "C")
@@ -91,19 +94,20 @@ internal class FixedLengthPataModelKotlinTest
         assertEquals(parsedObject.j.trim(), "J")
 
         //Test data is same as parsed data
-        assertEquals(parsedObject.toString(), StandardProtocol.parseData)
-        assertEquals(parsedObject.toDataString(), StandardProtocol.parseData)
+        assertEquals(StandardProtocol.parseData, pata.serialize(parsedObject))
     }
 
     @Test
     fun `Korean Test`()
     {
+        val pata = Pata()
+
         val korean = "한글"
         val created = StandardProtocol().also {
             it.a = korean
         }
 
-        val parsed = FixedLengthDataModel.parse<StandardProtocol>(created.toString(EUC_KR), EUC_KR)
+        val parsed = pata.fromString<StandardProtocol>(pata.serialize(created, EUC_KR), EUC_KR)
 
         assertEquals(created.a.trim(), parsed.a.trim())
         assertEquals(created.b.trim(), parsed.b.trim())
@@ -116,34 +120,7 @@ internal class FixedLengthPataModelKotlinTest
         assertEquals(created.i.trim(), parsed.i.trim())
         assertEquals(created.j.trim(), parsed.j.trim())
 
-        assertEquals(created.toString(EUC_KR), created.toString(EUC_KR))
-        assertEquals(created.toDataString(EUC_KR), created.toDataString(EUC_KR))
-    }
-
-    class WiredDataModel: FixedLengthDataModel()
-    {
-        class WiredDataPadding: PataPadding {
-            override fun padding(data: Any, expectedSize: Int, type: KType, charset: Charset): String {
-                return data.toString().padStart(expectedSize, '-')
-            }
-        }
-
-        @FixedDataField(1, "A", 5, WiredDataPadding::class)
-        var a: String = "A"
-
-        @FixedDataField(2, "B", 5, WiredDataPadding::class)
-        var b: String = "B"
-
-        companion object
-        {
-            val correctPaddedData = "----A----B"
-        }
-    }
-
-    @Test
-    fun `Custom Data Padding Test`()
-    {
-        assertEquals(WiredDataModel.correctPaddedData, WiredDataModel().toString())
+        assertEquals(pata.serialize(created, EUC_KR), pata.serialize(parsed, EUC_KR))
     }
 
     data class KotlinDataClassModel(
@@ -152,7 +129,7 @@ internal class FixedLengthPataModelKotlinTest
 
         @FixedDataField(2, "B", 5)
         var b: String = "B"
-    ): FixedLengthDataModel()
+    ): FixedLengthPataModel()
     {
         companion object
         {
@@ -163,8 +140,10 @@ internal class FixedLengthPataModelKotlinTest
     @Test
     fun `Kotlin Data Class Test`()
     {
-        assertEquals(KotlinDataClassModel.correctData, KotlinDataClassModel().toDataString())
-        assertEquals(KotlinDataClassModel.correctData, FixedLengthDataModel.parse<KotlinDataClassModel>(KotlinDataClassModel.correctData).toDataString())
+        val pata = Pata()
+
+        assertEquals(KotlinDataClassModel.correctData, pata.serialize(KotlinDataClassModel()))
+        assertEquals(KotlinDataClassModel(), pata.fromString<KotlinDataClassModel>(KotlinDataClassModel.correctData))
     }
 
 }

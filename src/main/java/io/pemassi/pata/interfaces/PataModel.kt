@@ -9,5 +9,5 @@ import java.nio.charset.Charset
 
 interface PataModel {
 
-    val charset: Charset
+    val modelCharset: Charset
 }
