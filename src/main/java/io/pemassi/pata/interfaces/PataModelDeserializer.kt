@@ -5,14 +5,11 @@
 
 package io.pemassi.pata.interfaces
 
+import io.pemassi.pata.models.deserializers.field.PataDataFieldDeserializerMap
 import java.nio.charset.Charset
-import kotlin.reflect.KType
-import kotlin.reflect.full.createInstance
 
 interface PataModelDeserializer<InputType, ModelType: PataModel<DataType>, DataType> {
 
-    fun deserialize(input: InputType, charset: Charset?, dataFieldDeserializers: HashMap<KType, HashMap<KType, PataDataFieldDeserializer<*, *>>>): ModelType
+    fun deserialize(instance: ModelType, input: InputType, charset: Charset?, dataFieldDeserializers: PataDataFieldDeserializerMap): ModelType
 
 }
-
-inline fun <reified ModelType: PataModel<DataType>, DataType> PataModelDeserializer<*, ModelType, DataType>.createInstance() = ModelType::class.createInstance()

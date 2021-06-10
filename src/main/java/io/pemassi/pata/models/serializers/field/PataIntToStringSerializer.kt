@@ -8,7 +8,7 @@ package io.pemassi.pata.models.serializers.field
 import io.pemassi.pata.interfaces.PataDataFieldSerializer
 import java.nio.charset.Charset
 
-class PataIntSerializer: PataDataFieldSerializer<Int, String>
+class PataIntToStringSerializer: PataDataFieldSerializer<Int, String>
 {
 
     override fun serialize(input: Int, charset: Charset): String {

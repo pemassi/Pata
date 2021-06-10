@@ -5,22 +5,20 @@
 
 package io.pemassi.pata.models.deserializers.model
 
-import io.pemassi.pata.interfaces.*
+import io.pemassi.pata.interfaces.PataModelDeserializer
 import io.pemassi.pata.models.FixedLengthPataModel
+import io.pemassi.pata.models.deserializers.field.PataDataFieldDeserializerMap
 import java.nio.charset.Charset
-import javax.activation.UnsupportedDataTypeException
-import kotlin.reflect.KClass
 
-class StringFixedLengthPataModelFromByteArrayDeserializer: PataModelDeserializer<ByteArray, FixedLengthPataModel<String>, String> {
+class PataFixedLengthModelByteArrayToStringDeserializer: PataModelDeserializer<ByteArray, FixedLengthPataModel<String>, String> {
 
     override fun deserialize(
+        instance: FixedLengthPataModel<String>,
         input: ByteArray,
         charset: Charset?,
-        dataFieldDeserializers: HashMap<KClass<*>, HashMap<KClass<*>, PataDataFieldDeserializer<*, *>>>
-    ): FixedLengthPataModel<String> {
-
-        val instance = createInstance()
-
+        dataFieldDeserializers: PataDataFieldDeserializerMap
+    ): FixedLengthPataModel<String>
+    {
         var cursor = 0
 
         instance.propertyDatabase.forEach {
@@ -28,8 +26,8 @@ class StringFixedLengthPataModelFromByteArrayDeserializer: PataModelDeserializer
             val startIndex = cursor
             val endIndex = cursor + annotation.size
             val splitData = input.copyOfRange(startIndex, endIndex)
-            val serializer = dataFieldDeserializers[property.returnType] ?: throw UnsupportedDataTypeException()
-            val inputData = serializer.deserialize(splitData, charset ?: instance.modelCharset)
+            val deserializer = dataFieldDeserializers.get<ByteArray>(property.returnType)
+            val inputData = deserializer.deserialize(splitData, charset ?: instance.modelCharset)
 
             property.setter.call(instance, inputData)
 

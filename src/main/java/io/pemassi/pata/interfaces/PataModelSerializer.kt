@@ -5,11 +5,11 @@
 
 package io.pemassi.pata.interfaces
 
+import io.pemassi.pata.models.serializers.field.PataDataFieldSerializerMap
 import java.nio.charset.Charset
-import kotlin.reflect.KType
 
 interface PataModelSerializer<T: PataModel<DataType>, DataType> {
 
-    fun serialize(model: T, charset: Charset?, dataFieldSerializers: HashMap<KType, HashMap<KType, PataDataFieldSerializer<*, *>>>): DataType
+    fun serialize(model: T, charset: Charset?, dataFieldSerializers: PataDataFieldSerializerMap): DataType
 
 }
