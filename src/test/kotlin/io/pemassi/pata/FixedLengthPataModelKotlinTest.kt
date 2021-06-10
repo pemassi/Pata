@@ -68,7 +68,7 @@ internal class FixedLengthPataModelKotlinTest
         )
 
         //When parsed
-        val parsedObject = pata.deserialize<String, StandardProtocol, String>(StandardProtocol.parseData)
+        val parsedObject = pata.deserialize<String, StandardProtocol>(StandardProtocol.parseData)
         assertArrayEquals(
             StandardProtocol.correctOrder.toTypedArray(),
             parsedObject.propertyDatabase.map { it.second.name }.toTypedArray()
@@ -94,7 +94,7 @@ internal class FixedLengthPataModelKotlinTest
             it.a = korean
         }
 
-        val parsed = pata.deserialize<String, StandardProtocol, String>(pata.serialize(created, EUC_KR), EUC_KR)
+        val parsed = pata.deserialize<String, StandardProtocol>(pata.serialize(created, EUC_KR), EUC_KR)
 
         assertEquals(created.a.trim(), parsed.a.trim())
         assertEquals(created.b.trim(), parsed.b.trim())
@@ -130,7 +130,7 @@ internal class FixedLengthPataModelKotlinTest
         val pata = Pata()
 
         assertEquals(KotlinDataClassModel.correctData, pata.serialize(KotlinDataClassModel()))
-        assertEquals(KotlinDataClassModel(), pata.deserialize<String, KotlinDataClassModel, String>(KotlinDataClassModel.correctData))
+        assertEquals(KotlinDataClassModel(), pata.deserialize<String, KotlinDataClassModel>(KotlinDataClassModel.correctData))
     }
 
 }

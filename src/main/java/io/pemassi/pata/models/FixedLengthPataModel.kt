@@ -8,6 +8,7 @@ package io.pemassi.pata.models
 import de.m3y.kformat.Table
 import de.m3y.kformat.table
 import io.pemassi.pata.annotations.FixedDataField
+import io.pemassi.pata.enums.PaddingMode
 import io.pemassi.pata.interfaces.PataModel
 import java.nio.charset.Charset
 import kotlin.reflect.KClass

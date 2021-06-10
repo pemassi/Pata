@@ -3,12 +3,12 @@
  * All rights reserved.
  */
 
-package io.pemassi.pata.models.deserializers.field
+package io.pemassi.pata.models.converters.deserializers.field
 
 import io.pemassi.pata.interfaces.PataDataFieldDeserializer
 import java.nio.charset.Charset
 
-class PataByteArrayToStringDeserializer: PataDataFieldDeserializer<ByteArray, String>
+class PataDataFieldByteArrayToStringDeserializer: PataDataFieldDeserializer<ByteArray, String>
 {
 
     override fun deserialize(data: ByteArray, charset: Charset): String {

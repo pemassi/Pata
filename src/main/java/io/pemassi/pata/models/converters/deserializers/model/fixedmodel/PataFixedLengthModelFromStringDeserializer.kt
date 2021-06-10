@@ -3,23 +3,23 @@
  * All rights reserved.
  */
 
-package io.pemassi.pata.models.deserializers.model
+package io.pemassi.pata.models.converters.deserializers.model.fixedmodel
 
 import io.pemassi.pata.interfaces.PataModelDeserializer
 import io.pemassi.pata.models.FixedLengthPataModel
-import io.pemassi.pata.models.deserializers.field.PataDataFieldDeserializerMap
+import io.pemassi.pata.models.map.PataDataFieldDeserializerMap
 import java.nio.charset.Charset
 
-class PataFixedLengthModelStringToStringDeserializer: PataModelDeserializer<String, FixedLengthPataModel<String>, String> {
+class PataFixedLengthModelFromStringDeserializer: PataModelDeserializer<String, FixedLengthPataModel<*>> {
 
     override fun deserialize(
-        instance: FixedLengthPataModel<String>,
+        instance: FixedLengthPataModel<*>,
         input: String,
         charset: Charset?,
         dataFieldDeserializers: PataDataFieldDeserializerMap
-    ): FixedLengthPataModel<String>
+    ): FixedLengthPataModel<*>
     {
-        return PataFixedLengthModelByteArrayToStringDeserializer().deserialize(
+        return PataFixedLengthModelFromByteArrayDeserializer().deserialize(
             instance = instance,
             input = input.toByteArray(charset ?: instance.modelCharset),
             charset = charset,

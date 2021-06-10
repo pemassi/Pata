@@ -5,7 +5,7 @@
 
 package io.pemassi.pata.interfaces
 
-import io.pemassi.pata.models.serializers.field.PataDataFieldSerializerMap
+import io.pemassi.pata.models.map.PataDataFieldSerializerMap
 import java.nio.charset.Charset
 
 interface PataModelSerializer<T: PataModel<DataType>, DataType> {

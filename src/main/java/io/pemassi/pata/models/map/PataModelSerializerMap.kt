@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-package io.pemassi.pata.models.serializers.model
+package io.pemassi.pata.models.map
 
 import io.pemassi.pata.interfaces.PataModel
 import io.pemassi.pata.interfaces.PataModelSerializer

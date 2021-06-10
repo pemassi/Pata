@@ -6,20 +6,22 @@
 package io.pemassi.pata
 
 import io.pemassi.pata.interfaces.*
-import io.pemassi.pata.models.deserializers.field.PataByteArrayToIntDeserializer
-import io.pemassi.pata.models.deserializers.field.PataByteArrayToLongDeserializer
-import io.pemassi.pata.models.deserializers.field.PataByteArrayToStringDeserializer
-import io.pemassi.pata.models.deserializers.field.PataDataFieldDeserializerMap
-import io.pemassi.pata.models.deserializers.model.PataFixedLengthModelByteArrayToStringDeserializer
-import io.pemassi.pata.models.deserializers.model.PataFixedLengthModelStringToStringDeserializer
-import io.pemassi.pata.models.deserializers.model.PataModelDeserializerMap
-import io.pemassi.pata.models.serializers.field.PataDataFieldSerializerMap
-import io.pemassi.pata.models.serializers.field.PataIntToStringSerializer
-import io.pemassi.pata.models.serializers.field.PataLongToStringSerializer
-import io.pemassi.pata.models.serializers.field.PataStringToStringSerializer
-import io.pemassi.pata.models.serializers.model.PataFixedLengthModelToByteArraySerializer
-import io.pemassi.pata.models.serializers.model.PataFixedLengthModelToStringSerializer
-import io.pemassi.pata.models.serializers.model.PataModelSerializerMap
+import io.pemassi.pata.models.converters.deserializers.field.PataDataFieldByteArrayToByteArrayDeserializer
+import io.pemassi.pata.models.converters.deserializers.field.PataDataFieldByteArrayToIntDeserializer
+import io.pemassi.pata.models.converters.deserializers.field.PataDataFieldByteArrayToLongDeserializer
+import io.pemassi.pata.models.converters.deserializers.field.PataDataFieldByteArrayToStringDeserializer
+import io.pemassi.pata.models.converters.deserializers.model.fixedmodel.PataFixedLengthModelFromByteArrayDeserializer
+import io.pemassi.pata.models.converters.deserializers.model.fixedmodel.PataFixedLengthModelFromStringDeserializer
+import io.pemassi.pata.models.converters.serializers.field.PataDataFieldByteArrayToByteArraySerializer
+import io.pemassi.pata.models.converters.serializers.field.PataDataFieldIntToStringSerializer
+import io.pemassi.pata.models.converters.serializers.field.PataDataFieldLongToStringSerializer
+import io.pemassi.pata.models.converters.serializers.field.PataDataFieldStringToStringSerializer
+import io.pemassi.pata.models.converters.serializers.model.fixedmodel.PataFixedLengthModelToByteArraySerializer
+import io.pemassi.pata.models.converters.serializers.model.fixedmodel.PataFixedLengthModelToStringSerializer
+import io.pemassi.pata.models.map.PataDataFieldDeserializerMap
+import io.pemassi.pata.models.map.PataDataFieldSerializerMap
+import io.pemassi.pata.models.map.PataModelDeserializerMap
+import io.pemassi.pata.models.map.PataModelSerializerMap
 import java.nio.charset.Charset
 import kotlin.reflect.full.createInstance
 
@@ -39,25 +41,27 @@ class Pata
 
         //PataModel Deserializers
         modelDeserializerMap
-            .register(PataFixedLengthModelStringToStringDeserializer())
-            .register(PataFixedLengthModelByteArrayToStringDeserializer())
+            .register(PataFixedLengthModelFromStringDeserializer())
+            .register(PataFixedLengthModelFromByteArrayDeserializer())
 
         //Data Serializers
         dataFieldSerializerMap
-            .register(PataIntToStringSerializer())
-            .register(PataLongToStringSerializer())
-            .register(PataStringToStringSerializer())
+            .register(PataDataFieldIntToStringSerializer())
+            .register(PataDataFieldLongToStringSerializer())
+            .register(PataDataFieldStringToStringSerializer())
+            .register(PataDataFieldByteArrayToByteArraySerializer())
 
         //Data Deserializers
         dataFieldDeserializerMap
-            .register(PataByteArrayToIntDeserializer())
-            .register(PataByteArrayToLongDeserializer())
-            .register(PataByteArrayToStringDeserializer())
+            .register(PataDataFieldByteArrayToIntDeserializer())
+            .register(PataDataFieldByteArrayToLongDeserializer())
+            .register(PataDataFieldByteArrayToStringDeserializer())
+            .register(PataDataFieldByteArrayToByteArrayDeserializer())
     }
 
-    inline fun <reified InputType, reified ModelType: PataModel<DataType>, reified DataType> deserialize(input: InputType, overrideCharset: Charset? = null, oldInstance: ModelType? = null): ModelType
+    inline fun <reified InputType, reified ModelType: PataModel<*>> deserialize(input: InputType, overrideCharset: Charset? = null, oldInstance: ModelType? = null): ModelType
     {
-        val castedDeserializer = modelDeserializerMap.get<InputType, ModelType, DataType>()
+        val castedDeserializer = modelDeserializerMap.get<InputType, ModelType>()
 
         val instance = ModelType::class.createInstance()
 
@@ -96,7 +100,7 @@ class Pata
         modelSerializerMap.register(newModelSerializer)
     }
 
-    inline fun <reified InputType, reified ModelType: PataModel<DataType>, reified DataType> registerModelDeserializer(newModelDeserializer: PataModelDeserializer<InputType, ModelType, DataType>)
+    inline fun <reified InputType, reified ModelType: PataModel<*>> registerModelDeserializer(newModelDeserializer: PataModelDeserializer<InputType, ModelType>)
     {
         modelDeserializerMap.register(newModelDeserializer)
     }

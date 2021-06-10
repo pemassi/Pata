@@ -3,14 +3,14 @@
  * All rights reserved.
  */
 
-package io.pemassi.pata.models.serializers.model
+package io.pemassi.pata.models.converters.serializers.model.fixedmodel
 
+import io.pemassi.pata.enums.PaddingMode
 import io.pemassi.pata.exceptions.DataModelSizeExceedException
 import io.pemassi.pata.exceptions.DataModelSizeNeedMoreException
 import io.pemassi.pata.interfaces.PataModelSerializer
 import io.pemassi.pata.models.FixedLengthPataModel
-import io.pemassi.pata.models.PaddingMode
-import io.pemassi.pata.models.serializers.field.PataDataFieldSerializerMap
+import io.pemassi.pata.models.map.PataDataFieldSerializerMap
 import java.nio.charset.Charset
 
 class PataFixedLengthModelToStringSerializer: PataModelSerializer<FixedLengthPataModel<String>, String> {

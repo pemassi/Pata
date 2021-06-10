@@ -3,20 +3,20 @@
  * All rights reserved.
  */
 
-package io.pemassi.pata.models.serializers.field
+package io.pemassi.pata.models.converters.serializers.field
 
 import io.pemassi.pata.interfaces.PataDataFieldSerializer
 import java.nio.charset.Charset
 
-class PataIntToStringSerializer: PataDataFieldSerializer<Int, String>
+class PataDataFieldLongToStringSerializer: PataDataFieldSerializer<Long, String>
 {
 
-    override fun serialize(input: Int, charset: Charset): String {
+    override fun serialize(input: Long, charset: Charset): String {
         return input.toString()
     }
 
     override fun padding(data: String, expectedSize: Int, charset: Charset): String {
-        return data.padStart(expectedSize, '0')
+        return data.padEnd(expectedSize, '0')
     }
 
 }

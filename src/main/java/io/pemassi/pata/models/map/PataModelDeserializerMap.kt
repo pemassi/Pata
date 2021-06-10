@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-package io.pemassi.pata.models.deserializers.model
+package io.pemassi.pata.models.map
 
 import io.pemassi.pata.interfaces.PataModel
 import io.pemassi.pata.interfaces.PataModelDeserializer
@@ -16,18 +16,13 @@ import kotlin.reflect.full.superclasses
 
 class PataModelDeserializerMap
 {
-    val map = HashMap<KType, HashMap<KType, HashMap<KClass<out PataModel<*>>, PataModelDeserializer<*, out PataModel<*>, *>>>>()
+    val map = HashMap<KType, HashMap<KClass<out PataModel<*>>, PataModelDeserializer<*, out PataModel<*>>>>()
 
-    inline fun <reified InputType, reified ModelType: PataModel<DataType>, reified DataType> register(newModelDeserializer: PataModelDeserializer<InputType, ModelType, DataType>): PataModelDeserializerMap
+    inline fun <reified InputType, reified ModelType: PataModel<*>> register(newModelDeserializer: PataModelDeserializer<InputType, ModelType>): PataModelDeserializerMap
     {
         val dataMap = map.getOrPut(InputType::class.starProjectedType) {
             HashMap()
         }
-
-        val modelMap = dataMap.getOrPut(DataType::class.starProjectedType) {
-            HashMap()
-        }
-
 
         val pataModelKClass = if(ModelType::class.isSubclassOf(PataModel::class))
             ModelType::class
@@ -39,18 +34,15 @@ class PataModelDeserializerMap
         //There is no logic error because we are checking with type when getting it.
         val castedPataModelKClass = pataModelKClass as KClass<out PataModel<*>>
 
-        modelMap[castedPataModelKClass] = newModelDeserializer
+        dataMap[castedPataModelKClass] = newModelDeserializer
 
         return this
     }
 
-    inline fun <reified InputType, reified ModelType: PataModel<DataType>, reified DataType> get(): PataModelDeserializer<InputType, ModelType, DataType>
+    inline fun <reified InputType, reified ModelType: PataModel<*>> get(): PataModelDeserializer<InputType, ModelType>
     {
         val dataMap = map[InputType::class.starProjectedType] ?:
             throw UnsupportedDataTypeException("Cannot find from PataModelDeserializerMap with InputType(${InputType::class.starProjectedType})")
-
-        val modelMap = dataMap[DataType::class.starProjectedType] ?:
-            throw UnsupportedDataTypeException("Cannot find from PataModelDeserializerMap with DataType(${DataType::class.starProjectedType})")
 
         val pataModelKClass = ModelType::class.superclasses.find { it.isSubclassOf(PataModel::class) } ?:
             throw UnsupportedDataTypeException("Cannot find PataModel subclass with DataType(${ModelType::class})")
@@ -59,12 +51,12 @@ class PataModelDeserializerMap
         //There is no logic error because we are checking with type when getting it.
         val castedPataModelKClass = pataModelKClass as KClass<out PataModel<*>>
 
-        val dataFieldDeserializer = modelMap[castedPataModelKClass] ?:
+        val dataFieldDeserializer = dataMap[castedPataModelKClass] ?:
             throw UnsupportedDataTypeException("Cannot find from PataDataFieldDeserializerMap with DataType(${pataModelKClass})")
 
         //Need to find better way to check code errors in compile level.
         //There is no logic error because we are checking with type when getting it.
-        return dataFieldDeserializer as PataModelDeserializer<InputType, ModelType, DataType>
+        return dataFieldDeserializer as PataModelDeserializer<InputType, ModelType>
     }
 
 }

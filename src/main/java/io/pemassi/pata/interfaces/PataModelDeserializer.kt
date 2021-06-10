@@ -5,10 +5,10 @@
 
 package io.pemassi.pata.interfaces
 
-import io.pemassi.pata.models.deserializers.field.PataDataFieldDeserializerMap
+import io.pemassi.pata.models.map.PataDataFieldDeserializerMap
 import java.nio.charset.Charset
 
-interface PataModelDeserializer<InputType, ModelType: PataModel<DataType>, DataType> {
+interface PataModelDeserializer<InputType, ModelType: PataModel<*>> {
 
     fun deserialize(instance: ModelType, input: InputType, charset: Charset?, dataFieldDeserializers: PataDataFieldDeserializerMap): ModelType
 

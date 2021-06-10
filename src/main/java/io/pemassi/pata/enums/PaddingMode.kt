@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-package io.pemassi.pata.models
+package io.pemassi.pata.enums
 
 enum class PaddingMode
 {

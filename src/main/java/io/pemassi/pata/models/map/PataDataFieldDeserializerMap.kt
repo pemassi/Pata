@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-package io.pemassi.pata.models.deserializers.field
+package io.pemassi.pata.models.map
 
 import io.pemassi.pata.interfaces.PataDataFieldDeserializer
 import javax.activation.UnsupportedDataTypeException
