@@ -8,11 +8,11 @@ package io.pemassi.pata.models.serializers.field
 import io.pemassi.pata.interfaces.PataDataFieldSerializer
 import java.nio.charset.Charset
 
-class PataIntSerializer: PataDataFieldSerializer<Int>
+class PataIntSerializer: PataDataFieldSerializer<Int, String>
 {
 
-    override fun serialize(data: Int, charset: Charset): String {
-        return data.toString()
+    override fun serialize(input: Int, charset: Charset): String {
+        return input.toString()
     }
 
     override fun padding(data: String, expectedSize: Int, charset: Charset): String {

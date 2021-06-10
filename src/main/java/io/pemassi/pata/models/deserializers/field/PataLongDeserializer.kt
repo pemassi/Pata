@@ -3,12 +3,12 @@
  * All rights reserved.
  */
 
-package io.pemassi.pata.models.deserializers
+package io.pemassi.pata.models.deserializers.field
 
 import io.pemassi.pata.interfaces.PataDataFieldDeserializer
 import java.nio.charset.Charset
 
-class PataLongDeserializer: PataDataFieldDeserializer<Long>
+class PataLongDeserializer: PataDataFieldDeserializer<ByteArray, Long>
 {
 
     override fun deserialize(data: ByteArray, charset: Charset): Long {

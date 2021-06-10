@@ -7,7 +7,7 @@ package io.pemassi.pata.interfaces
 
 import java.nio.charset.Charset
 
-interface PataModel {
+interface PataModel<DataType> {
 
     val modelCharset: Charset
 }

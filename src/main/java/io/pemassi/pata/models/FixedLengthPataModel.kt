@@ -19,10 +19,10 @@ import kotlin.reflect.full.memberProperties
  *
  * The property, that you want use part of data, should be annotated with [FixedDataField].
  */
-abstract class FixedLengthPataModel(
+abstract class FixedLengthPataModel<DataType>(
     override val modelCharset: Charset = Charset.defaultCharset(),
     val paddingMode: PaddingMode = PaddingMode.LENIENT,
-): PataModel
+): PataModel<DataType>
 {
     val propertyDatabase: List<Pair<KMutableProperty<*>, FixedDataField>> by lazy {
         cachedPropertyDatabase.getOrPut(this::class) {

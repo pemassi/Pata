@@ -13,7 +13,8 @@ import java.nio.charset.Charset
  * (IMPORTANT) Inherited class must have non-parameter constructor.
  *
  */
-interface PataDataFieldDeserializer<T> {
+interface PataDataFieldDeserializer<InputType, DataType> {
 
-    fun deserialize(data: ByteArray, charset: Charset): T
+    fun deserialize(data: InputType, charset: Charset): DataType
+
 }

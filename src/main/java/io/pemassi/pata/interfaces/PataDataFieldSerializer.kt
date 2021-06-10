@@ -7,13 +7,13 @@ package io.pemassi.pata.interfaces
 
 import java.nio.charset.Charset
 
-interface PataDataFieldSerializer<T>: PataDataPadding<T> {
+interface PataDataFieldSerializer<InputType, DataType>: PataDataPadding<DataType> {
 
-    fun serialize(data: T, charset: Charset): String
+    fun serialize(input: InputType, charset: Charset): DataType
 
-    fun serializeWithPadding(data: T, expectedSize: Int, charset: Charset): String
+    fun serializeWithPadding(input: InputType, expectedSize: Int, charset: Charset): DataType
     {
-        return padding(serialize(data, charset), expectedSize, charset)
+        return padding(serialize(input, charset), expectedSize, charset)
     }
 
 }

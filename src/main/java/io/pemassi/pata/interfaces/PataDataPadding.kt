@@ -13,6 +13,8 @@ import java.nio.charset.Charset
  * (IMPORTANT) Inherited class must have non-parameter constructor.
  *
  */
-interface PataDataPadding<T> {
-    fun padding(data: String, expectedSize: Int, charset: Charset): String
+interface PataDataPadding< DataType> {
+
+    fun padding(data: DataType, expectedSize: Int, charset: Charset): DataType
+
 }

@@ -15,9 +15,9 @@ import java.nio.charset.Charset
 import java.security.spec.InvalidParameterSpecException
 import kotlin.reflect.KType
 
-class FixedLengthPataModelSerializer: PataModelSerializer<FixedLengthPataModel> {
+class StringFixedLengthPataModelSerializer: PataModelSerializer<FixedLengthPataModel<String>, String> {
 
-    override fun serialize(model: FixedLengthPataModel, charset: Charset?, dataFieldSerializers: HashMap<KType, PataDataFieldSerializer<*>>): String {
+    override fun serialize(model: FixedLengthPataModel<String>, charset: Charset?, dataFieldSerializers: HashMap<KType, PataDataFieldSerializer<*>>): String {
 
         val propertyDatabase = model.propertyDatabase
 

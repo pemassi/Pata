@@ -8,8 +8,8 @@ package io.pemassi.pata.interfaces
 import java.nio.charset.Charset
 import kotlin.reflect.KType
 
-interface PataModelSerializer<T: PataModel> {
+interface PataModelSerializer<T: PataModel<DataType>, DataType> {
 
-    fun serialize(model: T, charset: Charset?, dataFieldSerializers: HashMap<KType, PataDataFieldSerializer<*>>): String
+    fun serialize(model: T, charset: Charset?, dataFieldSerializers: HashMap<KType, HashMap<KType, PataDataFieldSerializer<*, *>>>): DataType
 
 }

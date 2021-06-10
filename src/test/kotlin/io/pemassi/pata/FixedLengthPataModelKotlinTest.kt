@@ -16,7 +16,7 @@ internal class FixedLengthPataModelKotlinTest
 {
     val EUC_KR = Charset.forName("EUC_KR")
 
-    class StandardProtocol : FixedLengthPataModel()
+    class StandardProtocol : FixedLengthPataModel<String>()
     {
         @FixedDataField(5, "A", 5)
         var a: String = ""
@@ -68,7 +68,7 @@ internal class FixedLengthPataModelKotlinTest
         )
 
         //When parsed
-        val parsedObject = pata.fromString<StandardProtocol>(StandardProtocol.parseData)
+        val parsedObject = pata.deserialize<String, StandardProtocol, String>(StandardProtocol.parseData)
         assertArrayEquals(
             StandardProtocol.correctOrder.toTypedArray(),
             parsedObject.propertyDatabase.map { it.second.name }.toTypedArray()
@@ -80,21 +80,8 @@ internal class FixedLengthPataModelKotlinTest
     {
         val pata = Pata()
 
-        //Test parsed data
-        val parsedObject = pata.fromString<StandardProtocol>(StandardProtocol.parseData)
-        assertEquals(parsedObject.a.trim(), "A")
-        assertEquals(parsedObject.b.trim(), "B")
-        assertEquals(parsedObject.c.trim(), "C")
-        assertEquals(parsedObject.d.trim(), "D")
-        assertEquals(parsedObject.e.trim(), "E")
-        assertEquals(parsedObject.f.trim(), "F")
-        assertEquals(parsedObject.g, 1)
-        assertEquals(parsedObject.h.trim(), "H")
-        assertEquals(parsedObject.i.trim(), "I")
-        assertEquals(parsedObject.j.trim(), "J")
-
         //Test data is same as parsed data
-        assertEquals(StandardProtocol.parseData, pata.serialize(parsedObject))
+        assertEquals("                                             00000", pata.serialize(StandardProtocol()))
     }
 
     @Test
@@ -107,7 +94,7 @@ internal class FixedLengthPataModelKotlinTest
             it.a = korean
         }
 
-        val parsed = pata.fromString<StandardProtocol>(pata.serialize(created, EUC_KR), EUC_KR)
+        val parsed = pata.deserialize<String, StandardProtocol, String>(pata.serialize(created, EUC_KR), EUC_KR)
 
         assertEquals(created.a.trim(), parsed.a.trim())
         assertEquals(created.b.trim(), parsed.b.trim())
@@ -129,7 +116,7 @@ internal class FixedLengthPataModelKotlinTest
 
         @FixedDataField(2, "B", 5)
         var b: String = "B"
-    ): FixedLengthPataModel()
+    ): FixedLengthPataModel<String>()
     {
         companion object
         {
@@ -143,7 +130,7 @@ internal class FixedLengthPataModelKotlinTest
         val pata = Pata()
 
         assertEquals(KotlinDataClassModel.correctData, pata.serialize(KotlinDataClassModel()))
-        assertEquals(KotlinDataClassModel(), pata.fromString<KotlinDataClassModel>(KotlinDataClassModel.correctData))
+        assertEquals(KotlinDataClassModel(), pata.deserialize<String, KotlinDataClassModel, String>(KotlinDataClassModel.correctData))
     }
 
 }
