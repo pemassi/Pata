@@ -5,9 +5,9 @@
 
 package io.pemassi.pata.models.map
 
+import io.pemassi.pata.exceptions.DataModelUnsupportedTypeException
 import io.pemassi.pata.interfaces.PataModel
 import io.pemassi.pata.interfaces.PataModelSerializer
-import javax.activation.UnsupportedDataTypeException
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.isSubclassOf
@@ -28,7 +28,7 @@ class PataModelSerializerMap
             ModelType::class
         else
             ModelType::class.superclasses.find { it.isSubclassOf(PataModel::class) } ?:
-            throw UnsupportedDataTypeException("Cannot find PataModel subclass with DataType(${ModelType::class})")
+            throw DataModelUnsupportedTypeException("Cannot find PataModel subclass with DataType(${ModelType::class})")
 
         //Need to find better way to check code errors in compile level.
         //There is no logic error because we are checking with type when getting it.
@@ -42,13 +42,13 @@ class PataModelSerializerMap
     inline fun <reified ModelType: PataModel<DataType>, reified DataType> get(): PataModelSerializer<ModelType, DataType>
     {
         val modelMap = map[DataType::class.starProjectedType] ?:
-            throw UnsupportedDataTypeException("Cannot find from PataModelSerializerMap with DataType(${DataType::class.starProjectedType})")
+            throw DataModelUnsupportedTypeException("Cannot find from PataModelSerializerMap with DataType(${DataType::class.starProjectedType})")
 
         val pataModelKClass = ModelType::class.superclasses.find { it.isSubclassOf(PataModel::class) } ?:
-            throw UnsupportedDataTypeException("Cannot find PataModel subclass with DataType(${ModelType::class})")
+            throw DataModelUnsupportedTypeException("Cannot find PataModel subclass with DataType(${ModelType::class})")
 
         val dataFieldSerializer = modelMap[pataModelKClass] ?:
-            throw UnsupportedDataTypeException("Cannot find from PataModelSerializerMap with DataType(${pataModelKClass})")
+            throw DataModelUnsupportedTypeException("Cannot find from PataModelSerializerMap with DataType(${pataModelKClass})")
 
         //Need to find better way to check code errors in compile level.
         //There is no logic error because we are checking with type when getting it.

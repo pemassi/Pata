@@ -5,8 +5,8 @@
 
 package io.pemassi.pata.models.map
 
+import io.pemassi.pata.exceptions.DataModelUnsupportedTypeException
 import io.pemassi.pata.interfaces.PataDataFieldDeserializer
-import javax.activation.UnsupportedDataTypeException
 import kotlin.reflect.KType
 import kotlin.reflect.full.starProjectedType
 
@@ -28,10 +28,10 @@ class PataDataFieldDeserializerMap
     inline fun <reified InputType> get(dataType: KType): PataDataFieldDeserializer<InputType, *>
     {
         val dataMap = map[InputType::class.starProjectedType] ?:
-            throw UnsupportedDataTypeException("Cannot find from PataDataFieldDeserializerMap with InputType(${InputType::class.starProjectedType})")
+            throw DataModelUnsupportedTypeException("Cannot find from PataDataFieldDeserializerMap with InputType(${InputType::class.starProjectedType})")
 
         val dataFieldDeserializer = dataMap[dataType] ?:
-            throw UnsupportedDataTypeException("Cannot find from PataDataFieldDeserializerMap with DataType(${dataType})")
+            throw DataModelUnsupportedTypeException("Cannot find from PataDataFieldDeserializerMap with DataType(${dataType})")
 
         //Need to find better way to check code errors in compile level.
         //There is no logic error because we are checking with type when getting it.
