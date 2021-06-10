@@ -1,4 +1,4 @@
-# Data Model Builder
+# Pata
 ![Release](https://jitpack.io/v/pemassi/DataModelBuilder.svg)
 ![Gradle CI](https://github.com/pemassi/DataModelBuilder/actions/workflows/gradle-ci.yml/badge.svg)
 
