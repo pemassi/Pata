@@ -1,5 +1,5 @@
 # Pata
-![Release](https://jitpack.io/v/pemassi/DataModelBuilder.svg)
+[![Release](https://jitpack.io/v/pemassi/Pata.svg)](https://jitpack.io/#pemassi/Pata)
 ![Gradle CI](https://github.com/pemassi/DataModelBuilder/actions/workflows/gradle-ci.yml/badge.svg)
 
 Data Model Builder for Kotlin(JVM)
