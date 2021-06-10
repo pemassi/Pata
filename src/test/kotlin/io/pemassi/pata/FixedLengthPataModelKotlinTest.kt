@@ -1,21 +1,22 @@
 /*
- * Copyright (c) 2021 Kyungyoon Kim.
+ * Copyright (c) 2021 Kyungyoon Kim(pemassi).
  * All rights reserved.
  */
 
-package io.pemassi.datamodelbuilder
+package io.pemassi.pata
 
-import io.pemassi.datamodelbuilder.annotations.FixedDataField
+import io.pemassi.pata.annotations.FixedDataField
+import io.pemassi.pata.models.FixedLengthPataModel
 import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.nio.charset.Charset
 
-internal class FixedLengthDataModelTest
+internal class FixedLengthPataModelKotlinTest
 {
     val EUC_KR = Charset.forName("EUC_KR")
 
-    class TestProtocol : FixedLengthDataModel()
+    class StandardProtocol : FixedLengthPataModel<String>()
     {
         @FixedDataField(5, "A", 5)
         var a: String = ""
@@ -46,58 +47,54 @@ internal class FixedLengthDataModelTest
 
         @FixedDataField(7, "J", 5)
         var j: String = ""
+
+        companion object
+        {
+            val correctOrder = listOf("E", "C", "B", "D", "A", "F", "J", "H", "I", "G")
+            val parseData = "E    C    B    D    A    F    J    H    I    00001"
+        }
     }
 
-    val correctOrder = listOf("E", "C", "B", "D", "A", "F", "J", "H", "I", "G")
-    val parseData = "E    C    B    D    A    F    J    H    I    00001"
-
     @Test
-    fun `Order Protocol In Order`()
+    fun `Deserialize Protocol In Order`()
     {
+        val pata = Pata()
+
         //When created
-        val createdObject = TestProtocol()
+        val createdObject = StandardProtocol()
         assertArrayEquals(
-            correctOrder.toTypedArray(),
+            StandardProtocol.correctOrder.toTypedArray(),
             createdObject.propertyDatabase.map { it.second.name }.toTypedArray()
         )
 
         //When parsed
-        val parsedObject = FixedLengthDataModel.parse<TestProtocol>(parseData)
+        val parsedObject = pata.deserialize<String, StandardProtocol>(StandardProtocol.parseData)
         assertArrayEquals(
-            correctOrder.toTypedArray(),
+            StandardProtocol.correctOrder.toTypedArray(),
             parsedObject.propertyDatabase.map { it.second.name }.toTypedArray()
         )
     }
 
     @Test
-    fun `Parse correctly`()
+    fun `Serialize correctly`()
     {
-        //Test parsed data
-        val parsedObject = FixedLengthDataModel.parse<TestProtocol>(parseData)
-        assertEquals(parsedObject.a.trim(), "A")
-        assertEquals(parsedObject.b.trim(), "B")
-        assertEquals(parsedObject.c.trim(), "C")
-        assertEquals(parsedObject.d.trim(), "D")
-        assertEquals(parsedObject.e.trim(), "E")
-        assertEquals(parsedObject.f.trim(), "F")
-        assertEquals(parsedObject.g, 1)
-        assertEquals(parsedObject.h.trim(), "H")
-        assertEquals(parsedObject.i.trim(), "I")
-        assertEquals(parsedObject.j.trim(), "J")
+        val pata = Pata()
 
         //Test data is same as parsed data
-        assertEquals(parsedObject.toString(), parseData)
+        assertEquals("                                             00000", pata.serialize(StandardProtocol()))
     }
 
     @Test
     fun `Korean Test`()
     {
+        val pata = Pata()
+
         val korean = "한글"
-        val created = TestProtocol().also {
+        val created = StandardProtocol().also {
             it.a = korean
         }
 
-        val parsed = FixedLengthDataModel.parse<TestProtocol>(created.toString(EUC_KR), EUC_KR)
+        val parsed = pata.deserialize<String, StandardProtocol>(pata.serialize(created, EUC_KR), EUC_KR)
 
         assertEquals(created.a.trim(), parsed.a.trim())
         assertEquals(created.b.trim(), parsed.b.trim())
@@ -110,7 +107,30 @@ internal class FixedLengthDataModelTest
         assertEquals(created.i.trim(), parsed.i.trim())
         assertEquals(created.j.trim(), parsed.j.trim())
 
-        assertEquals(created.toString(EUC_KR), created.toString(EUC_KR))
-
+        assertEquals(pata.serialize(created, EUC_KR), pata.serialize(parsed, EUC_KR))
     }
+
+    data class KotlinDataClassModel(
+        @FixedDataField(1, "A", 5)
+        var a: String = "A",
+
+        @FixedDataField(2, "B", 5)
+        var b: String = "B"
+    ): FixedLengthPataModel<String>()
+    {
+        companion object
+        {
+            val correctData = "A    B    "
+        }
+    }
+
+    @Test
+    fun `Kotlin Data Class Test`()
+    {
+        val pata = Pata()
+
+        assertEquals(KotlinDataClassModel.correctData, pata.serialize(KotlinDataClassModel()))
+        assertEquals(KotlinDataClassModel(), pata.deserialize<String, KotlinDataClassModel>(KotlinDataClassModel.correctData))
+    }
+
 }
