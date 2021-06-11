@@ -18,6 +18,6 @@ allprojects {
 And add next dependencies in the build.gradle of the module:
 ```gradle
 dependencies {
-    implementation 'com.github.pemassi:Pata:2.0.1'
+    implementation 'com.github.pemassi:Pata:2.0.2'
 }
 ```
