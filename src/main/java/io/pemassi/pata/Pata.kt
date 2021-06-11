@@ -59,16 +59,16 @@ class Pata
             .register(PataDataFieldByteArrayToByteArrayDeserializer())
     }
 
-    inline fun <reified InputType, reified ModelType: PataModel<*>> deserialize(input: InputType, overrideCharset: Charset? = null, oldInstance: ModelType? = null): ModelType
+    inline fun <reified InputType, reified ModelType: PataModel<*>, reified OutputType: ModelType> deserialize(input: InputType, overrideCharset: Charset? = null, oldInstance: ModelType? = null): OutputType
     {
         val castedDeserializer = modelDeserializerMap.get<InputType, ModelType>()
 
-        val instance = ModelType::class.createInstance()
+        val instance = OutputType::class.createInstance()
 
-        return castedDeserializer.deserialize(instance, input, overrideCharset, dataFieldDeserializerMap)
+        return castedDeserializer.deserialize(instance, input, overrideCharset, dataFieldDeserializerMap) as OutputType
     }
 
-    inline fun <reified ModelType: PataModel<DataType>,reified DataType> serialize(dataModel: ModelType, charset: Charset? = null): DataType
+    inline fun <reified InputType: ModelType, reified ModelType: PataModel<DataType>, reified DataType> serialize(dataModel: InputType, charset: Charset? = null): DataType
     {
         val serializer = modelSerializerMap.get<ModelType, DataType>()
 

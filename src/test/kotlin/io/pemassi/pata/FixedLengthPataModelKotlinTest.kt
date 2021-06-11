@@ -68,7 +68,7 @@ internal class FixedLengthPataModelKotlinTest
         )
 
         //When parsed
-        val parsedObject = pata.deserialize<String, StandardProtocol>(StandardProtocol.parseData)
+        val parsedObject = pata.deserialize<String, FixedLengthPataModel<String>, StandardProtocol>(StandardProtocol.parseData)
         assertArrayEquals(
             StandardProtocol.correctOrder.toTypedArray(),
             parsedObject.propertyDatabase.map { it.second.name }.toTypedArray()
@@ -81,7 +81,7 @@ internal class FixedLengthPataModelKotlinTest
         val pata = Pata()
 
         //Test data is same as parsed data
-        assertEquals("                                             00000", pata.serialize(StandardProtocol()))
+        assertEquals("                                             00000", pata.serialize<StandardProtocol, FixedLengthPataModel<String>, String>(StandardProtocol()))
     }
 
     @Test
@@ -94,7 +94,7 @@ internal class FixedLengthPataModelKotlinTest
             it.a = korean
         }
 
-        val parsed = pata.deserialize<String, StandardProtocol>(pata.serialize(created, EUC_KR), EUC_KR)
+        val parsed = pata.deserialize<String, FixedLengthPataModel<String>, StandardProtocol>(pata.serialize<StandardProtocol, FixedLengthPataModel<String>, String>(created, EUC_KR), EUC_KR)
 
         assertEquals(created.a.trim(), parsed.a.trim())
         assertEquals(created.b.trim(), parsed.b.trim())
@@ -107,7 +107,7 @@ internal class FixedLengthPataModelKotlinTest
         assertEquals(created.i.trim(), parsed.i.trim())
         assertEquals(created.j.trim(), parsed.j.trim())
 
-        assertEquals(pata.serialize(created, EUC_KR), pata.serialize(parsed, EUC_KR))
+        assertEquals(pata.serialize<StandardProtocol, FixedLengthPataModel<String>, String>(created, EUC_KR), pata.serialize<StandardProtocol, FixedLengthPataModel<String>, String>(parsed, EUC_KR))
     }
 
     data class KotlinDataClassModel(
@@ -129,8 +129,8 @@ internal class FixedLengthPataModelKotlinTest
     {
         val pata = Pata()
 
-        assertEquals(KotlinDataClassModel.correctData, pata.serialize(KotlinDataClassModel()))
-        assertEquals(KotlinDataClassModel(), pata.deserialize<String, KotlinDataClassModel>(KotlinDataClassModel.correctData))
+        assertEquals(KotlinDataClassModel.correctData, pata.serialize<KotlinDataClassModel, FixedLengthPataModel<String>, String>(KotlinDataClassModel()))
+        assertEquals(KotlinDataClassModel(), pata.deserialize<String, FixedLengthPataModel<String>, KotlinDataClassModel>(KotlinDataClassModel.correctData))
     }
 
 }

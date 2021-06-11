@@ -28,10 +28,10 @@ class PataDataFieldDeserializerMap
     inline fun <reified InputType> get(dataType: KType): PataDataFieldDeserializer<InputType, *>
     {
         val dataMap = map[InputType::class.starProjectedType] ?:
-            throw DataModelUnsupportedTypeException("Cannot find from PataDataFieldDeserializerMap with InputType(${InputType::class.starProjectedType})")
+            throw DataModelUnsupportedTypeException("Cannot find from PataDataFieldDeserializerMap with InputType(${InputType::class.starProjectedType} -> ${dataType})")
 
         val dataFieldDeserializer = dataMap[dataType] ?:
-            throw DataModelUnsupportedTypeException("Cannot find from PataDataFieldDeserializerMap with DataType(${dataType})")
+            throw DataModelUnsupportedTypeException("Cannot find from PataDataFieldDeserializerMap with DataType(${InputType::class.starProjectedType} -> ${dataType})")
 
         //Need to find better way to check code errors in compile level.
         //There is no logic error because we are checking with type when getting it.

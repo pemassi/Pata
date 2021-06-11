@@ -10,9 +10,7 @@ import io.pemassi.pata.interfaces.PataModel
 import io.pemassi.pata.interfaces.PataModelSerializer
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
-import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.starProjectedType
-import kotlin.reflect.full.superclasses
 
 class PataModelSerializerMap
 {
@@ -24,17 +22,7 @@ class PataModelSerializerMap
             HashMap()
         }
 
-        val pataModelKClass = if(ModelType::class.isSubclassOf(PataModel::class))
-            ModelType::class
-        else
-            ModelType::class.superclasses.find { it.isSubclassOf(PataModel::class) } ?:
-            throw DataModelUnsupportedTypeException("Cannot find PataModel subclass with DataType(${ModelType::class})")
-
-        //Need to find better way to check code errors in compile level.
-        //There is no logic error because we are checking with type when getting it.
-        val castedPataModelKClass = pataModelKClass as KClass<out PataModel<*>>
-
-        modelMap[castedPataModelKClass] = newModelSerializer
+        modelMap[ModelType::class] = newModelSerializer
 
         return this
     }
@@ -44,11 +32,8 @@ class PataModelSerializerMap
         val modelMap = map[DataType::class.starProjectedType] ?:
             throw DataModelUnsupportedTypeException("Cannot find from PataModelSerializerMap with DataType(${DataType::class.starProjectedType})")
 
-        val pataModelKClass = ModelType::class.superclasses.find { it.isSubclassOf(PataModel::class) } ?:
-            throw DataModelUnsupportedTypeException("Cannot find PataModel subclass with DataType(${ModelType::class})")
-
-        val dataFieldSerializer = modelMap[pataModelKClass] ?:
-            throw DataModelUnsupportedTypeException("Cannot find from PataModelSerializerMap with DataType(${pataModelKClass})")
+        val dataFieldSerializer = modelMap[ModelType::class] ?:
+            throw DataModelUnsupportedTypeException("Cannot find from PataModelSerializerMap with DataType(${ModelType::class})")
 
         //Need to find better way to check code errors in compile level.
         //There is no logic error because we are checking with type when getting it.
