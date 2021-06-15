@@ -133,4 +133,17 @@ internal class FixedLengthPataModelKotlinTest
         assertEquals(KotlinDataClassModel(), pata.deserialize<String, FixedLengthPataModel<String>, KotlinDataClassModel>(KotlinDataClassModel.correctData))
     }
 
+
+    class Test2 : FixedLengthPataModel<ByteArray>()
+    {
+        @FixedDataField(5, "A", 5)
+        var a: ByteArray = ByteArray(5) { -0x2F }
+    }
+
+    @Test
+    fun `123`()
+    {
+        println(Test2().toLog())
+    }
+
 }

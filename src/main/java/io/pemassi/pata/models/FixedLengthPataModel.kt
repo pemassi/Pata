@@ -7,13 +7,17 @@ package io.pemassi.pata.models
 
 import de.m3y.kformat.Table
 import de.m3y.kformat.table
+import io.pemassi.pata.Pata
 import io.pemassi.pata.annotations.FixedDataField
 import io.pemassi.pata.enums.PaddingMode
+import io.pemassi.pata.exceptions.DataModelUnsupportedTypeException
+import io.pemassi.pata.interfaces.PataDataFieldSerializer
 import io.pemassi.pata.interfaces.PataModel
 import java.nio.charset.Charset
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.memberProperties
+import kotlin.reflect.full.starProjectedType
 
 /**
  * Declare this class or data class is fixed length data model.
@@ -39,7 +43,7 @@ abstract class FixedLengthPataModel<DataType>(
         propertyDatabase.sumOf { it.second.size }
     }
 
-    fun toLog(): String
+    fun toLog(pata: Pata = Pata()): String
     {
         return table {
             header("Name(Variable Name)", "Expected Size", "Actual Size", "Value")
@@ -50,11 +54,26 @@ abstract class FixedLengthPataModel<DataType>(
                 val name = annotation.name
                 val expectedSize = annotation.size
                 val variableName = property.name
-                val value = property.getter.call(this@FixedLengthPataModel).toString()
-                val valueByteArray = value.toByteArray(modelCharset)
-                val actualSize = valueByteArray.size
+                val value = property.getter.call(this@FixedLengthPataModel)
 
-                row("$name($variableName)", expectedSize, actualSize, "[$value]")
+                val printValue: String
+                val actualSize: Int
+
+
+                if(value is ByteArray)
+                {
+                    printValue = "0x" + bytesToHex(value)
+                    actualSize = value.size
+                }
+                else
+                {
+                    printValue = value.toString()
+
+                    val valueByteArray = value.toString().toByteArray(modelCharset)
+                    actualSize = valueByteArray.size
+                }
+
+                row("$name($variableName)", expectedSize, actualSize, "[$printValue]")
             }
 
             hints {
@@ -80,6 +99,19 @@ abstract class FixedLengthPataModel<DataType>(
             .filterHasProtocolAnnotation { property, protocol ->
                 action(property, protocol)
             }
+    }
+
+    private val hexArray = "0123456789ABCDEF".toCharArray()
+
+    private fun bytesToHex(bytes: ByteArray): String {
+        val hexChars = CharArray(bytes.size * 2)
+        for (j in bytes.indices) {
+            val v = bytes[j].toInt() and 0xFF
+
+            hexChars[j * 2] = hexArray[v ushr 4]
+            hexChars[j * 2 + 1] = hexArray[v and 0x0F]
+        }
+        return String(hexChars)
     }
 
     companion object
