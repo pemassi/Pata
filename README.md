@@ -14,7 +14,6 @@ Especially `Korean` spend 2 bytes on `EUC-KR` encoding or more than that on the 
 1. Define your data model
 ```kotlin
 data class KotlinDataClassModel(
-data class KotlinDataClassModel(
     @FixedDataField(order = 1, name = "Item Name",  size = 10)
     var itemName: String = "",
 
