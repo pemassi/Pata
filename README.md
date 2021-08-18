@@ -4,13 +4,13 @@
 
 Data Model Builder for Kotlin(JVM)
 
-## Why did you made this?
+## Reason Why I Made This
 Many projects usually use pre-made protocols(ex. HTTP, WebSocket), but sometimes, a developer needs to make their own protocols that communicate on TCP/IP layer, especially, `Fixed-Length Protocol`. With this library, the developers are able to define the `Protocol Data Model(aka. Data Model)`, serialize from `data model` to `String`, deserialize from `String` to `data model` with fewer efforts. Also, it has useful side functions such as detailed logging.
 
-## This library supports Korean also
-Especially `Korean` spend 2 bytes on `EUC-KR` encoding or more than that on the other encoding, also this feature is followed to some other languages. Because of this, many Korean developers are having a hard time dealing with counting length for `Fixed-Length Protocol`. This library will help with this without any action.
+## Supports Korean
+Since I am Korean, `Pata` supports `Korean`. Especially `Korean` spend 2 bytes on `EUC-KR` encoding or more than that on the other encoding, also this feature is followed to some other languages. Because of this, many Korean developers are having a hard time dealing with counting length for `Fixed-Length Protocol`. This library will help with this without any action.
 
-## How to use?
+## How to Use?
 1. Define your data model
 ```kotlin
 data class KotlinDataClassModel(
@@ -71,8 +71,80 @@ Item Name(itemName) |            10 |           8 | [Keyboard]
 
 The way to deseralize the `String` into `Object` is also similar to `Gson`. `Pata` has pretty-log feature, so you could print data model into console to debug data. (Again, you might need to make own rule for some types. Please check `io.pemassi.pata.interfaces.PataDataFieldDeserializer` interface for information.)
 
-## What about speed?
-For now, I will not care about speed to focus on making some other features.
+## Make Own Rules / Use Own Types as Data Field
+Do you want to use `enum` class as `data field`? Don't worry, I already made interfaces for you.
+
+Let's say, you have below the classes:
+```kotlin
+enum class Currency(val code: String)
+{
+    KOREAN_WON("KRW"),
+    USA_DOLLAR("USD"),
+    JAPAN_YEN("JPY"),
+}
+
+data class KotlinDataClassModel(
+    @FixedDataField(order = 1, name = "Item Name",  size = 10)
+    var itemName: String = "",
+
+    @FixedDataField(order = 2, name ="Price", size = 5)
+    var price: Int = 0,
+
+    @FixedDataField(order = 3, name ="Currency", size = 3)
+    var currency: Currency = Currency.KOREAN_WON,
+): FixedLengthPataModel<String>(
+    modelCharset = Charsets.UTF_8,
+    paddingMode = PaddingMode.LENIENT
+)
+```
+
+If you try to serialize, you will meet this error:
+```console
+Cannot find from PataDataFieldSerializerMap with InputType(io.pemassi.pata.FixedLengthPataModelKotlinTest.Currency -> kotlin.String)
+...
+```
+
+To serialize the custom type `Currency`, we need to a new class that implemented interface `PataDataFieldSerializer` and register to `Pata`.
+
+> Code
+```kotlin
+class PataDataFieldCurrencyToStringSerializer: PataDataFieldSerializer<Currency, String>
+{
+    override fun serialize(input: Currency, charset: Charset): String {
+        return input.code
+    }
+
+    override fun padding(data: String, expectedSize: Int, charset: Charset): String {
+        return PataDataFieldStringToStringSerializer().padding(data, expectedSize, charset)
+    }
+}
+
+fun main()
+{
+    val model = KotlinDataClassModel().apply {
+        itemName = "Ice Cream"
+        price = 1200
+        currency = Currency.KOREAN_WON
+    }
+
+    val pata = Pata().apply {
+        registerDataFieldSerializer(PataDataFieldCurrencyToStringSerializer())
+    }
+    val serialized = pata.serialize<KotlinDataClassModel, FixedLengthPataModel<String>, String>(model)
+
+    println("[$serialized]")
+}
+```
+
+> Console
+```console
+[Ice Cream 01200KRW]
+```
+
+There we go, it works! Don't forget to make and register `Deserializer` also to deserialize it.
+
+## What About Speed?
+For now, I will not care about the speed to focus on making some other features.
 
 ## Setup
 Add the JitPack repository in your build.gradle (top level module):
