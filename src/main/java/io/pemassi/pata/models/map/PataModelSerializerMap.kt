@@ -11,6 +11,7 @@ import io.pemassi.pata.interfaces.PataModelSerializer
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.starProjectedType
+import kotlin.reflect.full.superclasses
 
 class PataModelSerializerMap
 {
@@ -27,17 +28,22 @@ class PataModelSerializerMap
         return this
     }
 
-    inline fun <reified ModelType: PataModel<DataType>, reified DataType> get(): PataModelSerializer<ModelType, DataType>
+    inline fun <reified InputType: PataModel<DataType>, reified DataType> get(): PataModelSerializer<PataModel<DataType>, DataType>
     {
         val modelMap = map[DataType::class.starProjectedType] ?:
             throw DataModelUnsupportedTypeException("Cannot find from PataModelSerializerMap with DataType(${DataType::class.starProjectedType})")
 
-        val dataFieldSerializer = modelMap[ModelType::class] ?:
-            throw DataModelUnsupportedTypeException("Cannot find from PataModelSerializerMap with DataType(${ModelType::class})")
+        modelMap[InputType::class]?.let {
+            return it as PataModelSerializer<PataModel<DataType>, DataType>
+        }
 
-        //Need to find better way to check code errors in compile level.
-        //There is no logic error because we are checking with type when getting it.
-        return dataFieldSerializer as PataModelSerializer<ModelType, DataType>
+        for(clazz in InputType::class.superclasses)
+        {
+            modelMap[clazz]?.let {
+                return it as PataModelSerializer<PataModel<DataType>, DataType>
+            }
+        }
+
+        throw DataModelUnsupportedTypeException("Cannot find from PataModelSerializerMap with DataType(${InputType::class})")
     }
-
 }

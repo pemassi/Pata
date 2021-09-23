@@ -4,14 +4,17 @@
  */
 
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.4.21'
+    id 'org.jetbrains.kotlin.jvm' version '1.5.21'
 }
 
 group 'io.pemassi'
-version '2.0.3'
+version '2.1.0'
 
 repositories {
     mavenCentral()
+    maven {
+        url = "https://jitpack.io"
+    }
 }
 
 dependencies {
@@ -20,10 +23,13 @@ dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
     
     //Table Print
-    implementation 'de.m3y.kformat:kformat:0.7'
+    implementation 'de.m3y.kformat:kformat:0.8'
+
+    //Extension
+    implementation("com.github.pemassi:pemassi-kotlin-extensions:1.0.4")
 
     //Test Libs
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
 

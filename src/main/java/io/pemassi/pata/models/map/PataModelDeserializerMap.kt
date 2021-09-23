@@ -11,6 +11,7 @@ import io.pemassi.pata.interfaces.PataModelDeserializer
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.starProjectedType
+import kotlin.reflect.full.superclasses
 
 class PataModelDeserializerMap
 {
@@ -27,14 +28,22 @@ class PataModelDeserializerMap
         return this
     }
 
-    inline fun <reified InputType, reified ModelType: PataModel<*>> get(): PataModelDeserializer<InputType, ModelType>
+    inline fun <reified InputType, reified OutputType: PataModel<*>> get(): PataModelDeserializer<InputType, PataModel<*>>
     {
         val dataMap = map[InputType::class.starProjectedType] ?:
             throw DataModelUnsupportedTypeException("Cannot find from PataModelDeserializerMap with InputType(${InputType::class.starProjectedType})")
 
-        val dataFieldDeserializer = dataMap[ModelType::class] ?:
-            throw DataModelUnsupportedTypeException("Cannot find from PataDataFieldDeserializerMap with DataType(${ModelType::class})")
+        val dataFieldDeserializer = dataMap[OutputType::class]
 
-        return dataFieldDeserializer as PataModelDeserializer<InputType, ModelType>
+        if(dataFieldDeserializer != null)
+            return dataFieldDeserializer as PataModelDeserializer<InputType, PataModel<*>>
+
+        for(clazz in OutputType::class.superclasses)
+        {
+            if(dataMap[clazz] != null)
+                return dataMap[clazz] as PataModelDeserializer<InputType, PataModel<*>>
+        }
+
+        throw DataModelUnsupportedTypeException("Cannot find from PataDataFieldDeserializerMap with DataType(${OutputType::class})")
     }
 }

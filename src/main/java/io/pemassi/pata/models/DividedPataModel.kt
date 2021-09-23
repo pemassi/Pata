@@ -9,8 +9,8 @@ import de.m3y.kformat.Table
 import de.m3y.kformat.table
 import io.pemassi.kotlin.extensions.common.encodeHexString
 import io.pemassi.pata.Pata
+import io.pemassi.pata.annotations.DividedDataField
 import io.pemassi.pata.annotations.FixedDataField
-import io.pemassi.pata.enums.PaddingMode
 import io.pemassi.pata.interfaces.PataModel
 import java.nio.charset.Charset
 import kotlin.reflect.KClass
@@ -22,14 +22,14 @@ import kotlin.reflect.full.memberProperties
  *
  * The property, that you want use part of data, should be annotated with [FixedDataField].
  */
-abstract class FixedLengthPataModel<DataType>(
+abstract class DividedPataModel(
+    val delimiters: String,
     override val modelCharset: Charset = Charset.defaultCharset(),
-    val paddingMode: PaddingMode = PaddingMode.LENIENT,
-): PataModel<DataType>
+): PataModel<String>
 {
-    val propertyDatabase: List<Pair<KMutableProperty<*>, FixedDataField>> by lazy {
+    val propertyDatabase: List<Pair<KMutableProperty<*>, DividedDataField>> by lazy {
         cachedPropertyDatabase.getOrPut(this::class) {
-            val tempDatabase = ArrayList<Pair<KMutableProperty<*>, FixedDataField>>()
+            val tempDatabase = ArrayList<Pair<KMutableProperty<*>, DividedDataField>>()
             getPropertiesWithProtocolAnnotation { property, annotation ->
                 tempDatabase.add(Pair(property, annotation))
             }
@@ -37,25 +37,21 @@ abstract class FixedLengthPataModel<DataType>(
         }
     }
 
-    val totalLength: Int by lazy {
-        propertyDatabase.sumOf { it.second.size }
-    }
-
     fun toLog(pata: Pata = Pata()): String
     {
         return table {
-            header("Name(Variable Name)", "Expected Size", "Actual Size", "Value")
+            header("Name(Variable Name)", "Actual Size", "Value")
 
             propertyDatabase.forEach {
                 val (property, annotation) = it
 
                 val name = annotation.name
-                val expectedSize = annotation.size
                 val variableName = property.name
-                val value = property.getter.call(this@FixedLengthPataModel)
+                val value = property.getter.call(this@DividedPataModel)
 
                 val printValue: String
                 val actualSize: Int
+
 
                 if(value is ByteArray)
                 {
@@ -70,7 +66,7 @@ abstract class FixedLengthPataModel<DataType>(
                     actualSize = valueByteArray.size
                 }
 
-                row("$name($variableName)", expectedSize, actualSize, "[$printValue]")
+                row("$name($variableName)", actualSize, "[$printValue]")
             }
 
             hints {
@@ -78,19 +74,19 @@ abstract class FixedLengthPataModel<DataType>(
                 alignment(3, Table.Hints.Alignment.LEFT)
             }
 
-        }.render(StringBuilder("'${this::class.simpleName}' Fixed Length Data Model\n")).toString()
+        }.render(StringBuilder("'${this::class.simpleName}' Divided Data Model\n")).toString()
     }
 
-    private inline fun Iterable<KMutableProperty<*>>.filterHasProtocolAnnotation(action: (KMutableProperty<*>, FixedDataField) -> Unit)
+    private inline fun Iterable<KMutableProperty<*>>.filterHasProtocolAnnotation(action: (KMutableProperty<*>, DividedDataField) -> Unit)
     {
         this.forEach { property ->
             property.annotations.forEach { annotation ->
-                if (annotation is FixedDataField) action(property, annotation)
+                if (annotation is DividedDataField) action(property, annotation)
             }
         }
     }
 
-    private fun getPropertiesWithProtocolAnnotation(action: (KMutableProperty<*>, FixedDataField) -> Unit)
+    private fun getPropertiesWithProtocolAnnotation(action: (KMutableProperty<*>, DividedDataField) -> Unit)
     {
         this::class.java.kotlin.memberProperties.filterIsInstance<KMutableProperty<*>>()
             .filterHasProtocolAnnotation { property, protocol ->
@@ -98,23 +94,10 @@ abstract class FixedLengthPataModel<DataType>(
             }
     }
 
-    private val hexArray = "0123456789ABCDEF".toCharArray()
-
-    private fun bytesToHex(bytes: ByteArray): String {
-        val hexChars = CharArray(bytes.size * 2)
-        for (j in bytes.indices) {
-            val v = bytes[j].toInt() and 0xFF
-
-            hexChars[j * 2] = hexArray[v ushr 4]
-            hexChars[j * 2 + 1] = hexArray[v and 0x0F]
-        }
-        return String(hexChars)
-    }
-
     companion object
     {
         private val cachedPropertyDatabase by lazy {
-            HashMap<KClass<*>, List<Pair<KMutableProperty<*>, FixedDataField>>>()
+            HashMap<KClass<*>, List<Pair<KMutableProperty<*>, DividedDataField>>>()
         }
 
     }

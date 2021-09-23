@@ -14,7 +14,7 @@ class PataDataFieldDeserializerMap
 {
     val map = HashMap<KType, HashMap<KType, PataDataFieldDeserializer<*, *>>>()
 
-    inline fun <reified InputType, reified  DataType> register(dataFieldDeserializer: PataDataFieldDeserializer<InputType, DataType>): PataDataFieldDeserializerMap
+    inline fun <reified InputType, reified DataType> register(dataFieldDeserializer: PataDataFieldDeserializer<InputType, DataType>): PataDataFieldDeserializerMap
     {
         val dataMap = map.getOrPut(InputType::class.starProjectedType) {
             HashMap()

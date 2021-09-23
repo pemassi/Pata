@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-package io.pemassi.pata.models.converters.serializers.model.fixedmodel
+package io.pemassi.pata.models.converters.serializers.model.fixed_length
 
 import io.pemassi.pata.enums.PaddingMode
 import io.pemassi.pata.exceptions.DataModelSizeExceedException
@@ -13,13 +13,13 @@ import io.pemassi.pata.models.FixedLengthPataModel
 import io.pemassi.pata.models.map.PataDataFieldSerializerMap
 import java.nio.charset.Charset
 
-class PataFixedLengthModelToStringSerializer: PataModelSerializer<FixedLengthPataModel<String>, String> {
+class PataFixedLengthModelToByteArraySerializer: PataModelSerializer<FixedLengthPataModel<ByteArray>, ByteArray> {
 
-    override fun serialize(model: FixedLengthPataModel<String>, charset: Charset?, dataFieldSerializers: PataDataFieldSerializerMap): String {
+    override fun serialize(model: FixedLengthPataModel<ByteArray>, charset: Charset?, dataFieldSerializers: PataDataFieldSerializerMap): ByteArray {
 
         val propertyDatabase = model.propertyDatabase
 
-        val builder = StringBuilder()
+        var ret = ByteArray(0)
 
         val targetCharset = charset ?: model.modelCharset
 
@@ -31,14 +31,11 @@ class PataFixedLengthModelToStringSerializer: PataModelSerializer<FixedLengthPat
             val variableName = property.name
             val variableType = property.returnType
 
-            //Need to find better way to check code errors in compile level.
-            //There is no logic error because we are checking with type when getting serializer.
-            val dataFieldSerializer = dataFieldSerializers.get<String>(variableType)
+            val dataFieldSerializer = dataFieldSerializers.get<ByteArray>(variableType)
 
             val value = property.getter.call(model)
             val serializedValue = dataFieldSerializer.serializeWithCasting(value, targetCharset)
-            val byteArraySerializedValue = serializedValue.toByteArray(targetCharset)
-            val actualSize = byteArraySerializedValue.size
+            val actualSize = serializedValue.size
 
             if (actualSize > expectedSize)
                 throw DataModelSizeExceedException(
@@ -65,9 +62,9 @@ class PataFixedLengthModelToStringSerializer: PataModelSerializer<FixedLengthPat
                     )
             }
 
-            builder.append(dataFieldSerializer.padding(serializedValue, expectedSize, targetCharset))
+            ret += dataFieldSerializer.padding(serializedValue, expectedSize, targetCharset)
         }
 
-        return builder.toString()
+        return ret
     }
 }

@@ -8,11 +8,9 @@ package io.pemassi.pata.models.converters.deserializers.field
 import io.pemassi.pata.interfaces.PataDataFieldDeserializer
 import java.nio.charset.Charset
 
-class PataDataFieldByteArrayToStringDeserializer: PataDataFieldDeserializer<ByteArray, String>
+class PataDataFieldStringToLongDeserializer: PataDataFieldDeserializer<String, Long>
 {
-
-    override fun deserialize(data: ByteArray, charset: Charset): String {
-        return String(data, charset).trim()
+    override fun deserialize(data: String, charset: Charset): Long {
+        return data.trim().toLong()
     }
-
 }

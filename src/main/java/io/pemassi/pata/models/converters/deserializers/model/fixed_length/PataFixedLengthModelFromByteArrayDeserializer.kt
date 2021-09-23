@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-package io.pemassi.pata.models.converters.deserializers.model.fixedmodel
+package io.pemassi.pata.models.converters.deserializers.model.fixed_length
 
 import io.pemassi.pata.interfaces.PataModelDeserializer
 import io.pemassi.pata.models.FixedLengthPataModel

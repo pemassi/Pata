@@ -7,7 +7,6 @@ package io.pemassi.pata.extensions
 
 import java.nio.charset.Charset
 
-
 fun String.padEndByByteLength(length: Int, padChar: Char, charset: Charset): String
 {
     if (length < 0)

@@ -5,56 +5,55 @@
 
 package io.pemassi.pata
 
-import io.pemassi.pata.annotations.FixedDataField
-import io.pemassi.pata.enums.PaddingMode
+import io.pemassi.pata.annotations.DividedDataField
 import io.pemassi.pata.interfaces.PataDataFieldSerializer
-import io.pemassi.pata.models.FixedLengthPataModel
+import io.pemassi.pata.models.DividedPataModel
 import io.pemassi.pata.models.converters.serializers.field.PataDataFieldStringToStringSerializer
 import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.nio.charset.Charset
 
-internal class FixedLengthPataModelKotlinTest
+internal class DividedPataModelKotlinTest
 {
     val EUC_KR = Charset.forName("EUC_KR")
 
-    class StandardProtocol : FixedLengthPataModel<String>()
+    class StandardProtocol : DividedPataModel("|")
     {
-        @FixedDataField(5, "A", 5)
+        @DividedDataField(5, "A")
         var a: String = ""
 
-        @FixedDataField(3, "B", 5)
+        @DividedDataField(3, "B")
         var b: String = ""
 
-        @FixedDataField(2, "C", 5)
+        @DividedDataField(2, "C")
         var c: String = ""
 
-        @FixedDataField(4, "D", 5)
+        @DividedDataField(4, "D")
         var d: String = ""
 
-        @FixedDataField(1, "E", 5)
+        @DividedDataField(1, "E")
         var e: String = ""
 
-        @FixedDataField(6, "F", 5)
+        @DividedDataField(6, "F")
         var f: String = ""
 
-        @FixedDataField(10, "G", 5)
+        @DividedDataField(10, "G")
         var g: Int = 0
 
-        @FixedDataField(8, "H", 5)
+        @DividedDataField(8, "H")
         var h: String = ""
 
-        @FixedDataField(9, "I", 5)
+        @DividedDataField(9, "I")
         var i: String = ""
 
-        @FixedDataField(7, "J", 5)
+        @DividedDataField(7, "J")
         var j: String = ""
 
         companion object
         {
             val correctOrder = listOf("E", "C", "B", "D", "A", "F", "J", "H", "I", "G")
-            val parseData = "E    C    B    D    A    F    J    H    I    00001"
+            val parseData = "E|C|B|D|A|F|J|H|I|0"
         }
     }
 
@@ -71,7 +70,7 @@ internal class FixedLengthPataModelKotlinTest
         )
 
         //When parsed
-        val parsedObject = pata.deserialize<String, StandardProtocol>(StandardProtocol.parseData)
+        val parsedObject: StandardProtocol = pata.deserialize(StandardProtocol.parseData)
         assertArrayEquals(
             StandardProtocol.correctOrder.toTypedArray(),
             parsedObject.propertyDatabase.map { it.second.name }.toTypedArray()
@@ -84,7 +83,7 @@ internal class FixedLengthPataModelKotlinTest
         val pata = Pata()
 
         //Test data is same as parsed data
-        assertEquals("                                             00000", pata.serialize(StandardProtocol()))
+        assertEquals("|||||||||0", pata.serialize(StandardProtocol()))
     }
 
     @Test
@@ -113,29 +112,6 @@ internal class FixedLengthPataModelKotlinTest
         assertEquals(pata.serialize(created, EUC_KR), pata.serialize(parsed, EUC_KR))
     }
 
-//    data class KotlinDataClassModel(
-//        @FixedDataField(1, "A", 5)
-//        var a: String = "A",
-//
-//        @FixedDataField(2, "B", 5)
-//        var b: String = "B"
-//    ): FixedLengthPataModel<String>()
-//    {
-//        companion object
-//        {
-//            val correctData = "A    B    "
-//        }
-//    }
-//
-//    @Test
-//    fun `Kotlin Data Class Test`()
-//    {
-//        val pata = Pata()
-//
-//        assertEquals(KotlinDataClassModel.correctData, pata.serialize<KotlinDataClassModel, FixedLengthPataModel<String>, String>(KotlinDataClassModel()))
-//        assertEquals(KotlinDataClassModel(), pata.deserialize<String, FixedLengthPataModel<String>, KotlinDataClassModel>(KotlinDataClassModel.correctData))
-//    }
-
     enum class Currency(val code: String)
     {
         KOREAN_WON("KRW"),
@@ -155,18 +131,16 @@ internal class FixedLengthPataModelKotlinTest
     }
 
     data class KotlinDataClassModel(
-        @FixedDataField(order = 1, name = "Item Name",  size = 10)
+        @DividedDataField(order = 1, name = "Item Name")
         var itemName: String = "",
 
-        @FixedDataField(order = 2, name ="Price", size = 5)
+        @DividedDataField(order = 2, name ="Price")
         var price: Int = 0,
 
-        @FixedDataField(order = 3, name ="Currency", size = 3)
+        @DividedDataField(order = 3, name ="Currency")
         var currency: Currency = Currency.KOREAN_WON,
-    ): FixedLengthPataModel<String>(
-        modelCharset = Charsets.UTF_8,
-        paddingMode = PaddingMode.LENIENT
-    )
+    ): DividedPataModel("|")
+
     @Test
     fun Example()
     {
@@ -200,19 +174,4 @@ internal class FixedLengthPataModelKotlinTest
 
         println("[$serialized]")
     }
-
-
-    class Test2 : FixedLengthPataModel<ByteArray>()
-    {
-        @FixedDataField(5, "A", 5)
-        var a: ByteArray = ByteArray(5) { -0x2F }
-    }
-
-    @Test
-    fun `123`()
-    {
-        println(Test2().toLog())
-    }
-
-
 }

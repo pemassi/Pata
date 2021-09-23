@@ -10,6 +10,10 @@ Many projects usually use pre-made protocols(ex. HTTP, WebSocket), but sometimes
 ## Supports Korean
 Since I am Korean, `Pata` supports `Korean`. Especially `Korean` spend 2 bytes on `EUC-KR` encoding or more than that on the other encoding, also this feature is followed to some other languages. Because of this, many Korean developers are having a hard time dealing with counting length for `Fixed-Length Protocol`. This library will help with this without any action.
 
+## Supports Model
+- FixedLength
+- Divided
+
 ## How to Use?
 1. Define your data model
 ```kotlin
@@ -40,7 +44,7 @@ val model = KotlinDataClassModel().apply {
 }
 
 val pata = Pata()
-val serialized = pata.serialize<KotlinDataClassModel, FixedLengthPataModel<String>, String>(model)
+val serialized: String = pata.serialize(model)
 
 println("[$serialized]")
 ```
@@ -55,7 +59,7 @@ The way to serialize the `Object` into `String` is similar to `Gson`. The fields
 > Code
 ```kotlin
 val recvData = "Keyboard  00010USD"
-val deserializedModel = Pata().deserialize<String, FixedLengthPataModel<String>, KotlinDataClassModel>(recvData)
+val deserializedModel: KotlinDataClassModel = Pata().deserialize(recvData)
 println(deserializedModel.toLog())
 ```
 
@@ -130,7 +134,7 @@ fun main()
     val pata = Pata().apply {
         registerDataFieldSerializer(PataDataFieldCurrencyToStringSerializer())
     }
-    val serialized = pata.serialize<KotlinDataClassModel, FixedLengthPataModel<String>, String>(model)
+    val serialized: String = pata.serialize(model)
 
     println("[$serialized]")
 }

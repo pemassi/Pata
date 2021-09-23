@@ -11,7 +11,6 @@ import java.nio.charset.Charset
 
 class PataDataFieldStringToStringSerializer: PataDataFieldSerializer<String, String>
 {
-
     override fun serialize(input: String, charset: Charset): String {
         return input
     }
