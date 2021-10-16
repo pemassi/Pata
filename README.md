@@ -13,6 +13,7 @@ Since I am Korean, `Pata` supports `Korean`. Especially `Korean` spend 2 bytes o
 ## Supports Model
 - FixedLength
 - Divided
+- Or make your own model!
 
 ## How to Use?
 1. Define your data model
