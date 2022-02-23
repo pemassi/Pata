@@ -16,7 +16,7 @@ class PataDataFieldLongToStringSerializer: PataDataFieldSerializer<Long, String>
     }
 
     override fun padding(data: String, expectedSize: Int, charset: Charset): String {
-        return data.padEnd(expectedSize, '0')
+        return data.padStart(expectedSize, '0')
     }
 
 }
