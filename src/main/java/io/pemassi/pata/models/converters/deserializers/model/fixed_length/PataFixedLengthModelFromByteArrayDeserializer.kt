@@ -9,6 +9,7 @@ import io.pemassi.pata.interfaces.PataModelDeserializer
 import io.pemassi.pata.models.FixedLengthPataModel
 import io.pemassi.pata.models.map.PataDataFieldDeserializerMap
 import java.nio.charset.Charset
+import kotlin.reflect.full.withNullability
 
 class PataFixedLengthModelFromByteArrayDeserializer: PataModelDeserializer<ByteArray, FixedLengthPataModel<*>> {
 
@@ -26,7 +27,7 @@ class PataFixedLengthModelFromByteArrayDeserializer: PataModelDeserializer<ByteA
             val startIndex = cursor
             val endIndex = cursor + annotation.size
             val splitData = input.copyOfRange(startIndex, endIndex)
-            val type = property.returnType
+            val type = property.returnType.withNullability(false)
             val deserializer = dataFieldDeserializers.get<ByteArray>(type)
             val inputData = deserializer.deserialize(
                 data = splitData,

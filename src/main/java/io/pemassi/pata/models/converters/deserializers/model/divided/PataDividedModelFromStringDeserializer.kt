@@ -11,6 +11,7 @@ import io.pemassi.pata.interfaces.PataModelDeserializer
 import io.pemassi.pata.models.DividedPataModel
 import io.pemassi.pata.models.map.PataDataFieldDeserializerMap
 import java.nio.charset.Charset
+import kotlin.reflect.full.withNullability
 
 class PataDividedModelFromStringDeserializer: PataModelDeserializer<String, DividedPataModel> {
 
@@ -27,7 +28,7 @@ class PataDividedModelFromStringDeserializer: PataModelDeserializer<String, Divi
         {
             val (property, _) = instance.propertyDatabase[i]
             val data = dataList[i]
-            val type = property.returnType
+            val type = property.returnType.withNullability(false)
             val deserializer = dataFieldDeserializers.get<String>(type)
             val inputData = deserializer.deserialize(
                 data = data,
