@@ -5,12 +5,29 @@
 
 package io.pemassi.pata.models.converters.deserializers.field
 
+import io.pemassi.pata.enums.CheckNullMode
+import io.pemassi.pata.enums.ReplaceNullMode
+import io.pemassi.pata.enums.TrimMode
 import io.pemassi.pata.interfaces.PataDataFieldDeserializer
+import io.pemassi.pata.models.converters.deserializers.field.abstracts.PataDataFieldDeserializerUtil
 import java.nio.charset.Charset
+import kotlin.reflect.KProperty
 
 class PataDataFieldStringToIntDeserializer: PataDataFieldDeserializer<String, Int>
 {
-    override fun deserialize(data: String, charset: Charset): Int {
-        return data.trim().toInt()
+    override fun deserialize(
+        data: String,
+        charset: Charset,
+        replaceNullMode: ReplaceNullMode,
+        trimMode: TrimMode,
+        checkNullMode: CheckNullMode,
+        property: KProperty<*>
+    ): Int?
+    {
+        return PataDataFieldDeserializerUtil.toInt(
+            data = data,
+            checkNullMode = checkNullMode,
+            property = property
+        )
     }
 }

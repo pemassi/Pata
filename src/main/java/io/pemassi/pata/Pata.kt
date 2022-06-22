@@ -60,7 +60,7 @@ class Pata
 
         val instance = oldInstance ?: OutputType::class.createInstance()
 
-        return castedDeserializer.deserialize(instance, input, overrideCharset, dataFieldDeserializerMap) as OutputType
+        return castedDeserializer.deserialize(instance, input, overrideCharset ?: instance.modelCharset, dataFieldDeserializerMap) as OutputType
     }
 
     inline fun <reified InputType: PataModel<DataType>, reified DataType> serialize(dataModel: InputType, charset: Charset? = null): DataType

@@ -34,12 +34,14 @@ class PataModelSerializerMap
             throw DataModelUnsupportedTypeException("Cannot find from PataModelSerializerMap with DataType(${DataType::class.starProjectedType})")
 
         modelMap[InputType::class]?.let {
+            @Suppress("UNCHECKED_CAST")
             return it as PataModelSerializer<PataModel<DataType>, DataType>
         }
 
         for(clazz in InputType::class.superclasses)
         {
             modelMap[clazz]?.let {
+                @Suppress("UNCHECKED_CAST")
                 return it as PataModelSerializer<PataModel<DataType>, DataType>
             }
         }

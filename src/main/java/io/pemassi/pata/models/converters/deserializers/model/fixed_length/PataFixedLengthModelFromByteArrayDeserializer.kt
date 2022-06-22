@@ -15,7 +15,7 @@ class PataFixedLengthModelFromByteArrayDeserializer: PataModelDeserializer<ByteA
     override fun deserialize(
         instance: FixedLengthPataModel<*>,
         input: ByteArray,
-        charset: Charset?,
+        charset: Charset,
         dataFieldDeserializers: PataDataFieldDeserializerMap
     ): FixedLengthPataModel<*>
     {
@@ -26,9 +26,16 @@ class PataFixedLengthModelFromByteArrayDeserializer: PataModelDeserializer<ByteA
             val startIndex = cursor
             val endIndex = cursor + annotation.size
             val splitData = input.copyOfRange(startIndex, endIndex)
-            val deserializer = dataFieldDeserializers.get<ByteArray>(property.returnType)
-            val inputData = deserializer.deserialize(splitData, charset ?: instance.modelCharset)
-
+            val type = property.returnType
+            val deserializer = dataFieldDeserializers.get<ByteArray>(type)
+            val inputData = deserializer.deserialize(
+                data = splitData,
+                charset = charset,
+                replaceNullMode = instance.replaceNullMode,
+                trimMode = instance.trimMode,
+                checkNullMode = instance.checkNullMode,
+                property = property,
+            )
             property.setter.call(instance, inputData)
 
             cursor = endIndex

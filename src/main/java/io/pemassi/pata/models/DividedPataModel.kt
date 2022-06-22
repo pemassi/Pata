@@ -11,6 +11,9 @@ import io.pemassi.kotlin.extensions.common.encodeHexString
 import io.pemassi.pata.Pata
 import io.pemassi.pata.annotations.DividedDataField
 import io.pemassi.pata.annotations.FixedDataField
+import io.pemassi.pata.enums.CheckNullMode
+import io.pemassi.pata.enums.ReplaceNullMode
+import io.pemassi.pata.enums.TrimMode
 import io.pemassi.pata.interfaces.PataModel
 import java.nio.charset.Charset
 import kotlin.reflect.KClass
@@ -25,6 +28,9 @@ import kotlin.reflect.full.memberProperties
 abstract class DividedPataModel(
     val delimiters: String,
     override val modelCharset: Charset = Charset.defaultCharset(),
+    val replaceNullMode: ReplaceNullMode = ReplaceNullMode.KEEP,
+    val trimMode: TrimMode = TrimMode.BOTH_TRIM,
+    val checkNullMode: CheckNullMode = CheckNullMode.REPLACE,
 ): PataModel<String>
 {
     val propertyDatabase: List<Pair<KMutableProperty<*>, DividedDataField>> by lazy {
@@ -37,7 +43,13 @@ abstract class DividedPataModel(
         }
     }
 
-    fun toLog(pata: Pata = Pata()): String
+    @Deprecated("parameter 'pata' is not required anymore.", ReplaceWith("toLog()"), DeprecationLevel.WARNING)
+    fun toLog(@Suppress("unused") pata: Pata): String
+    {
+        return this.toLog()
+    }
+
+    fun toLog(): String
     {
         return table {
             header("Name(Variable Name)", "Actual Size", "Value")
@@ -51,7 +63,6 @@ abstract class DividedPataModel(
 
                 val printValue: String
                 val actualSize: Int
-
 
                 if(value is ByteArray)
                 {

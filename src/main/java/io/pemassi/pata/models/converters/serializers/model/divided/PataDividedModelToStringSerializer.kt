@@ -5,6 +5,7 @@
 
 package io.pemassi.pata.models.converters.serializers.model.divided
 
+import io.pemassi.pata.exceptions.DataFieldNullException
 import io.pemassi.pata.interfaces.PataModelSerializer
 import io.pemassi.pata.models.DividedPataModel
 import io.pemassi.pata.models.map.PataDataFieldSerializerMap
@@ -28,7 +29,8 @@ class PataDividedModelToStringSerializer: PataModelSerializer<DividedPataModel, 
 
             val dataFieldSerializer = dataFieldSerializers.get<String>(variableType)
 
-            val value = property.getter.call(model)
+            val value = property.getter.call(model) ?:
+                throw DataFieldNullException(property)
 
             if(value.toString().contains(model.delimiters))
                 throw InvalidParameterException("One of the data fields has delimiter(${model.delimiters}).")

@@ -36,11 +36,13 @@ class PataModelDeserializerMap
         val dataFieldDeserializer = dataMap[OutputType::class]
 
         if(dataFieldDeserializer != null)
+            @Suppress("UNCHECKED_CAST")
             return dataFieldDeserializer as PataModelDeserializer<InputType, PataModel<*>>
 
         for(clazz in OutputType::class.superclasses)
         {
             if(dataMap[clazz] != null)
+                @Suppress("UNCHECKED_CAST")
                 return dataMap[clazz] as PataModelDeserializer<InputType, PataModel<*>>
         }
 

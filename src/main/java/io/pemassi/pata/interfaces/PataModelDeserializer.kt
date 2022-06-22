@@ -10,6 +10,6 @@ import java.nio.charset.Charset
 
 interface PataModelDeserializer<InputType, ModelType: PataModel<*>> {
 
-    fun deserialize(instance: ModelType, input: InputType, charset: Charset?, dataFieldDeserializers: PataDataFieldDeserializerMap): ModelType
+    fun deserialize(instance: ModelType, input: InputType, charset: Charset, dataFieldDeserializers: PataDataFieldDeserializerMap): ModelType
 
 }

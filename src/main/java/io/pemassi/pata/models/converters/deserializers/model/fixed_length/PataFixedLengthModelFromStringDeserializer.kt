@@ -9,21 +9,41 @@ import io.pemassi.pata.interfaces.PataModelDeserializer
 import io.pemassi.pata.models.FixedLengthPataModel
 import io.pemassi.pata.models.map.PataDataFieldDeserializerMap
 import java.nio.charset.Charset
+import kotlin.reflect.full.withNullability
 
 class PataFixedLengthModelFromStringDeserializer: PataModelDeserializer<String, FixedLengthPataModel<*>> {
 
     override fun deserialize(
         instance: FixedLengthPataModel<*>,
         input: String,
-        charset: Charset?,
+        charset: Charset,
         dataFieldDeserializers: PataDataFieldDeserializerMap
     ): FixedLengthPataModel<*>
     {
-        return PataFixedLengthModelFromByteArrayDeserializer().deserialize(
-            instance = instance,
-            input = input.toByteArray(charset ?: instance.modelCharset),
-            charset = charset,
-            dataFieldDeserializers = dataFieldDeserializers
-        )
+
+        var cursor = 0
+        val byteArrayInput = input.toByteArray(charset)
+
+        instance.propertyDatabase.forEach {
+            val (property, annotation) = it
+            val startIndex = cursor
+            val endIndex = cursor + annotation.size
+            val splitData = byteArrayInput.copyOfRange(startIndex, endIndex)
+            val type = property.returnType.withNullability(false)
+            val deserializer = dataFieldDeserializers.get<String>(type)
+            val inputData = deserializer.deserialize(
+                data = String(splitData, charset),
+                charset = charset ?: instance.modelCharset,
+                replaceNullMode = instance.replaceNullMode,
+                trimMode = instance.trimMode,
+                checkNullMode = instance.checkNullMode,
+                property = property,
+            )
+            property.setter.call(instance, inputData)
+
+            cursor = endIndex
+        }
+
+        return instance
     }
 }

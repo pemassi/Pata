@@ -11,6 +11,7 @@ interface PataDataFieldSerializer<InputType: Any?, DataType>: PataDataPadding<Da
 
     fun serializeWithCasting(input: Any?, charset: Charset): DataType
     {
+        @Suppress("UNCHECKED_CAST")
         return serialize(input as InputType, charset)
     }
 

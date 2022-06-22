@@ -10,7 +10,10 @@ import de.m3y.kformat.table
 import io.pemassi.kotlin.extensions.common.encodeHexString
 import io.pemassi.pata.Pata
 import io.pemassi.pata.annotations.FixedDataField
+import io.pemassi.pata.enums.CheckNullMode
+import io.pemassi.pata.enums.ReplaceNullMode
 import io.pemassi.pata.enums.PaddingMode
+import io.pemassi.pata.enums.TrimMode
 import io.pemassi.pata.interfaces.PataModel
 import java.nio.charset.Charset
 import kotlin.reflect.KClass
@@ -25,23 +28,28 @@ import kotlin.reflect.full.memberProperties
 abstract class FixedLengthPataModel<DataType>(
     override val modelCharset: Charset = Charset.defaultCharset(),
     val paddingMode: PaddingMode = PaddingMode.LENIENT,
+    val trimMode: TrimMode = TrimMode.BOTH_TRIM,
+    val replaceNullMode: ReplaceNullMode = ReplaceNullMode.KEEP,
+    val checkNullMode: CheckNullMode = CheckNullMode.KEEP,
 ): PataModel<DataType>
 {
-    val propertyDatabase: List<Pair<KMutableProperty<*>, FixedDataField>> by lazy {
-        cachedPropertyDatabase.getOrPut(this::class) {
-            val tempDatabase = ArrayList<Pair<KMutableProperty<*>, FixedDataField>>()
-            getPropertiesWithProtocolAnnotation { property, annotation ->
-                tempDatabase.add(Pair(property, annotation))
-            }
-            tempDatabase.sortedWith(compareBy { it.second.order })
+    val propertyDatabase: List<Pair<KMutableProperty<*>, FixedDataField>> = cachedPropertyDatabase.getOrPut(this::class) {
+        val tempDatabase = ArrayList<Pair<KMutableProperty<*>, FixedDataField>>()
+        getPropertiesWithProtocolAnnotation { property, annotation ->
+            tempDatabase.add(Pair(property, annotation))
         }
+        tempDatabase.sortedWith(compareBy { it.second.order })
     }
 
-    val totalLength: Int by lazy {
-        propertyDatabase.sumOf { it.second.size }
+    val totalLength: Int = propertyDatabase.sumOf { it.second.size }
+
+    @Deprecated("parameter 'pata' is not required anymore.", ReplaceWith("toLog()"), DeprecationLevel.WARNING)
+    fun toLog(@Suppress("unused") pata: Pata): String
+    {
+        return this.toLog()
     }
 
-    fun toLog(pata: Pata = Pata()): String
+    fun toLog(): String
     {
         return table {
             header("Name(Variable Name)", "Expected Size", "Actual Size", "Value")
@@ -98,24 +106,10 @@ abstract class FixedLengthPataModel<DataType>(
             }
     }
 
-    private val hexArray = "0123456789ABCDEF".toCharArray()
-
-    private fun bytesToHex(bytes: ByteArray): String {
-        val hexChars = CharArray(bytes.size * 2)
-        for (j in bytes.indices) {
-            val v = bytes[j].toInt() and 0xFF
-
-            hexChars[j * 2] = hexArray[v ushr 4]
-            hexChars[j * 2 + 1] = hexArray[v and 0x0F]
-        }
-        return String(hexChars)
-    }
-
     companion object
     {
         private val cachedPropertyDatabase by lazy {
             HashMap<KClass<*>, List<Pair<KMutableProperty<*>, FixedDataField>>>()
         }
-
     }
 }

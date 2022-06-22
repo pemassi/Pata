@@ -3,8 +3,9 @@
  * All rights reserved.
  */
 
-package io.pemassi.pata
+package io.pemassi.pata.old
 
+import io.pemassi.pata.Pata
 import io.pemassi.pata.annotations.DividedDataField
 import io.pemassi.pata.interfaces.PataDataFieldSerializer
 import io.pemassi.pata.models.DividedPataModel

@@ -6,6 +6,7 @@
 package io.pemassi.pata.models.converters.serializers.model.fixed_length
 
 import io.pemassi.pata.enums.PaddingMode
+import io.pemassi.pata.exceptions.DataFieldNullException
 import io.pemassi.pata.exceptions.DataModelSizeExceedException
 import io.pemassi.pata.exceptions.DataModelSizeNeedMoreException
 import io.pemassi.pata.interfaces.PataModelSerializer
@@ -33,7 +34,9 @@ class PataFixedLengthModelToByteArraySerializer: PataModelSerializer<FixedLength
 
             val dataFieldSerializer = dataFieldSerializers.get<ByteArray>(variableType)
 
-            val value = property.getter.call(model)
+            val value = property.getter.call(model) ?:
+                throw DataFieldNullException(property)
+
             val serializedValue = dataFieldSerializer.serializeWithCasting(value, targetCharset)
             val actualSize = serializedValue.size
 

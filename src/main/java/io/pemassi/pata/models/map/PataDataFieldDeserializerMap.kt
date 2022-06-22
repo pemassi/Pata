@@ -33,8 +33,7 @@ class PataDataFieldDeserializerMap
         val dataFieldDeserializer = dataMap[dataType] ?:
             throw DataModelUnsupportedTypeException("Cannot find from PataDataFieldDeserializerMap with DataType(${InputType::class.starProjectedType} -> ${dataType})")
 
-        //Need to find better way to check code errors in compile level.
-        //There is no logic error because we are checking with type when getting it.
+        @Suppress("UNCHECKED_CAST")
         return dataFieldDeserializer as PataDataFieldDeserializer<InputType, *>
     }
 

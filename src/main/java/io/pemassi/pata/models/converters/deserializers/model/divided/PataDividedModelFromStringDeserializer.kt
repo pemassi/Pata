@@ -5,6 +5,8 @@
 
 package io.pemassi.pata.models.converters.deserializers.model.divided
 
+import io.pemassi.pata.enums.ReplaceNullMode
+import io.pemassi.pata.enums.TrimMode
 import io.pemassi.pata.interfaces.PataModelDeserializer
 import io.pemassi.pata.models.DividedPataModel
 import io.pemassi.pata.models.map.PataDataFieldDeserializerMap
@@ -15,7 +17,7 @@ class PataDividedModelFromStringDeserializer: PataModelDeserializer<String, Divi
     override fun deserialize(
         instance: DividedPataModel,
         input: String,
-        charset: Charset?,
+        charset: Charset,
         dataFieldDeserializers: PataDataFieldDeserializerMap
     ): DividedPataModel
     {
@@ -25,8 +27,16 @@ class PataDividedModelFromStringDeserializer: PataModelDeserializer<String, Divi
         {
             val (property, _) = instance.propertyDatabase[i]
             val data = dataList[i]
-            val deserializer = dataFieldDeserializers.get<String>(property.returnType)
-            val inputData = deserializer.deserialize(data, charset ?: instance.modelCharset)
+            val type = property.returnType
+            val deserializer = dataFieldDeserializers.get<String>(type)
+            val inputData = deserializer.deserialize(
+                data = data,
+                charset = charset,
+                replaceNullMode = instance.replaceNullMode,
+                trimMode = instance.trimMode,
+                checkNullMode = instance.checkNullMode,
+                property = property,
+            )
             property.setter.call(instance, inputData)
         }
 
