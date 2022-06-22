@@ -1,4 +1,5 @@
 # Pata
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/685b0da7c937418dbb9c78d7e35d8daa)](https://app.codacy.com/gh/pemassi/Pata?utm_source=github.com&utm_medium=referral&utm_content=pemassi/Pata&utm_campaign=Badge_Grade_Settings)
 [![Release](https://jitpack.io/v/pemassi/Pata.svg)](https://jitpack.io/#pemassi/Pata)
 ![Gradle CI](https://github.com/pemassi/DataModelBuilder/actions/workflows/gradle-ci.yml/badge.svg)
 [![Maintainability](https://api.codeclimate.com/v1/badges/4e401b0d7342664908ac/maintainability)](https://codeclimate.com/github/pemassi/Pata/maintainability)
