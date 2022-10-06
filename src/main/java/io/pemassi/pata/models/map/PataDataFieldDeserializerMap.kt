@@ -5,6 +5,7 @@
 
 package io.pemassi.pata.models.map
 
+import io.pemassi.kotlin.extensions.slf4j.getLogger
 import io.pemassi.pata.exceptions.DataModelUnsupportedTypeException
 import io.pemassi.pata.interfaces.PataDataFieldDeserializer
 import io.pemassi.pata.interfaces.PataDataFieldSerializer
@@ -40,7 +41,7 @@ class PataDataFieldDeserializerMap
         }
         catch(e: DataModelUnsupportedTypeException)
         {
-            PataDataFieldSerializerMap.logger.debug("Fail to find deserializer with return type. Try with super classes", e)
+            logger.debug("Fail to find deserializer with return type. Try with super classes", e)
 
             // If not found, try all super classes
             val superClasses = inputClass.superclasses.map { it.starProjectedType }
@@ -69,6 +70,11 @@ class PataDataFieldDeserializerMap
 
         @Suppress("UNCHECKED_CAST")
         return dataFieldDeserializer as PataDataFieldDeserializer<InputType, *>
+    }
+
+    companion object
+    {
+        val logger by getLogger()
     }
 
 }
