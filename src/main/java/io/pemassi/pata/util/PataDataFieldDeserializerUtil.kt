@@ -11,6 +11,7 @@ import io.pemassi.pata.enums.TrimMode
 import io.pemassi.pata.exceptions.DataFieldNullException
 import java.math.BigDecimal
 import java.math.BigInteger
+import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
 object PataDataFieldDeserializerUtil
@@ -62,11 +63,19 @@ object PataDataFieldDeserializerUtil
         property: KProperty<*>
     ): Long?
     {
+        val processed = toString(
+            data = data,
+            replaceNullMode = ReplaceNullMode.WHEN_BLANK,
+            trimMode = TrimMode.BOTH_TRIM,
+            checkNullMode = checkNullMode,
+            property = property
+        )
+
         return when(checkNullMode)
         {
-            CheckNullMode.KEEP -> data?.toLong()
-            CheckNullMode.REPLACE -> data?.toLongOrNull() ?: 0
-            CheckNullMode.EXCEPTION -> throw DataFieldNullException(property)
+            CheckNullMode.KEEP -> processed?.toLong()
+            CheckNullMode.REPLACE -> processed?.toLong() ?: 0
+            CheckNullMode.EXCEPTION -> processed?.toLong() ?: throw DataFieldNullException(property)
         }
     }
 
@@ -76,11 +85,19 @@ object PataDataFieldDeserializerUtil
         property: KProperty<*>
     ): Int?
     {
+        val processed = toString(
+            data = data,
+            replaceNullMode = ReplaceNullMode.WHEN_BLANK,
+            trimMode = TrimMode.BOTH_TRIM,
+            checkNullMode = checkNullMode,
+            property = property
+        )
+
         return when(checkNullMode)
         {
-            CheckNullMode.KEEP -> data?.toInt()
-            CheckNullMode.REPLACE -> data?.toIntOrNull() ?: 0
-            CheckNullMode.EXCEPTION -> throw DataFieldNullException(property)
+            CheckNullMode.KEEP -> processed?.toInt()
+            CheckNullMode.REPLACE -> processed?.toInt() ?: 0
+            CheckNullMode.EXCEPTION -> processed?.toInt() ?: throw DataFieldNullException(property)
         }
     }
 
@@ -90,11 +107,19 @@ object PataDataFieldDeserializerUtil
         property: KProperty<*>
     ): Float?
     {
+        val processed = toString(
+            data = data,
+            replaceNullMode = ReplaceNullMode.WHEN_BLANK,
+            trimMode = TrimMode.BOTH_TRIM,
+            checkNullMode = checkNullMode,
+            property = property
+        )
+
         return when(checkNullMode)
         {
-            CheckNullMode.KEEP -> data?.toFloat()
-            CheckNullMode.REPLACE -> data?.toFloatOrNull() ?: 0.0f
-            CheckNullMode.EXCEPTION -> throw DataFieldNullException(property)
+            CheckNullMode.KEEP -> processed?.toFloat()
+            CheckNullMode.REPLACE -> processed?.toFloat() ?: 0.0f
+            CheckNullMode.EXCEPTION -> processed?.toFloat() ?: throw DataFieldNullException(property)
         }
     }
 
@@ -104,11 +129,19 @@ object PataDataFieldDeserializerUtil
         property: KProperty<*>
     ): Double?
     {
+        val processed = toString(
+            data = data,
+            replaceNullMode = ReplaceNullMode.WHEN_BLANK,
+            trimMode = TrimMode.BOTH_TRIM,
+            checkNullMode = checkNullMode,
+            property = property
+        )
+
         return when(checkNullMode)
         {
-            CheckNullMode.KEEP -> data?.toDouble()
-            CheckNullMode.REPLACE -> data?.toDoubleOrNull() ?: 0.0
-            CheckNullMode.EXCEPTION -> throw DataFieldNullException(property)
+            CheckNullMode.KEEP -> processed?.toDouble()
+            CheckNullMode.REPLACE -> processed?.toDouble() ?: 0.0
+            CheckNullMode.EXCEPTION -> processed?.toDouble() ?: throw DataFieldNullException(property)
         }
     }
 
@@ -118,11 +151,19 @@ object PataDataFieldDeserializerUtil
         property: KProperty<*>
     ): BigDecimal?
     {
+        val processed = toString(
+            data = data,
+            replaceNullMode = ReplaceNullMode.WHEN_BLANK,
+            trimMode = TrimMode.BOTH_TRIM,
+            checkNullMode = checkNullMode,
+            property = property
+        )
+
         return when(checkNullMode)
         {
-            CheckNullMode.KEEP -> data?.toBigDecimal()
-            CheckNullMode.REPLACE -> data?.toBigDecimalOrNull() ?: BigDecimal.ZERO
-            CheckNullMode.EXCEPTION -> throw DataFieldNullException(property)
+            CheckNullMode.KEEP -> processed?.toBigDecimal()
+            CheckNullMode.REPLACE -> processed?.toBigDecimal() ?: BigDecimal.ZERO
+            CheckNullMode.EXCEPTION -> processed?.toBigDecimal() ?: throw DataFieldNullException(property)
         }
     }
 
@@ -132,11 +173,45 @@ object PataDataFieldDeserializerUtil
         property: KProperty<*>
     ): BigInteger?
     {
+        val processed = toString(
+            data = data,
+            replaceNullMode = ReplaceNullMode.WHEN_BLANK,
+            trimMode = TrimMode.BOTH_TRIM,
+            checkNullMode = checkNullMode,
+            property = property
+        )
+
         return when(checkNullMode)
         {
-            CheckNullMode.KEEP -> data?.toBigInteger()
-            CheckNullMode.REPLACE -> data?.toBigIntegerOrNull() ?: BigInteger.ZERO
-            CheckNullMode.EXCEPTION -> throw DataFieldNullException(property)
+            CheckNullMode.KEEP -> processed?.toBigInteger()
+            CheckNullMode.REPLACE -> processed?.toBigInteger() ?: BigInteger.ZERO
+            CheckNullMode.EXCEPTION -> processed?.toBigInteger() ?: throw DataFieldNullException(property)
+        }
+    }
+
+    fun toEnum(
+        data: String,
+        checkNullMode: CheckNullMode,
+        property: KProperty<*>,
+    ): Enum<*>?
+    {
+        val processed = toString(
+            data = data,
+            replaceNullMode = ReplaceNullMode.WHEN_BLANK,
+            trimMode = TrimMode.BOTH_TRIM,
+            checkNullMode = checkNullMode,
+            property = property
+        )
+
+        val enumClass = property.returnType.classifier as KClass<Enum<*>>
+        val enumList = enumClass.java.enumConstants as Array<Enum<*>>
+        val found = enumList.find { it.name == processed }
+
+        return when(checkNullMode)
+        {
+            CheckNullMode.KEEP -> found
+            CheckNullMode.REPLACE -> found ?: throw DataFieldNullException(property)
+            CheckNullMode.EXCEPTION -> found ?: throw DataFieldNullException(property)
         }
     }
 }

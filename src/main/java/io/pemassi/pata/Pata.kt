@@ -42,6 +42,7 @@ class Pata
         .register(PataDataFieldStringToStringSerializer())
         .register(PataDataFieldByteArrayToByteArraySerializer())
         .register(PataDataFieldByteArrayToStringSerializer())
+        .register(PataDataFieldEnumToStringSerializer())
 
     //Data Deserializers
     val dataFieldDeserializerMap = PataDataFieldDeserializerMap()
@@ -53,6 +54,7 @@ class Pata
         .register(PataDataFieldStringToDoubleDeserializer())
         .register(PataDataFieldStringToBigDecimalDeserializer())
         .register(PataDataFieldStringToBigIntegerDeserializer())
+        .register(PataDataFieldStringToEnumDeserializer())
         .register(PataDataFieldByteArrayToIntDeserializer())
         .register(PataDataFieldByteArrayToLongDeserializer())
         .register(PataDataFieldByteArrayToStringDeserializer())

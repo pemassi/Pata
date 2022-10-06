@@ -28,8 +28,7 @@ class PataDividedModelFromStringDeserializer: PataModelDeserializer<String, Divi
         {
             val (property, _) = instance.propertyDatabase[i]
             val data = dataList[i]
-            val type = property.returnType.withNullability(false)
-            val deserializer = dataFieldDeserializers.get<String>(type)
+            val deserializer = dataFieldDeserializers.get<String>(property)
             val inputData = deserializer.deserialize(
                 data = data,
                 charset = charset,

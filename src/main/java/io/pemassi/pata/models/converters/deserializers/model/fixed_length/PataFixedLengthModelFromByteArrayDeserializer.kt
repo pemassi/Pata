@@ -27,8 +27,7 @@ class PataFixedLengthModelFromByteArrayDeserializer: PataModelDeserializer<ByteA
             val startIndex = cursor
             val endIndex = cursor + annotation.size
             val splitData = input.copyOfRange(startIndex, endIndex)
-            val type = property.returnType.withNullability(false)
-            val deserializer = dataFieldDeserializers.get<ByteArray>(type)
+            val deserializer = dataFieldDeserializers.get<ByteArray>(property)
             val inputData = deserializer.deserialize(
                 data = splitData,
                 charset = charset,
