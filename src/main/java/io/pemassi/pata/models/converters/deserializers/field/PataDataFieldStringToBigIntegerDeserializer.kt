@@ -10,10 +10,11 @@ import io.pemassi.pata.enums.ReplaceNullMode
 import io.pemassi.pata.enums.TrimMode
 import io.pemassi.pata.interfaces.PataDataFieldDeserializer
 import io.pemassi.pata.util.PataDataFieldDeserializerUtil
+import java.math.BigInteger
 import java.nio.charset.Charset
 import kotlin.reflect.KProperty
 
-class PataDataFieldStringToLongDeserializer: PataDataFieldDeserializer<String, Long>
+class PataDataFieldStringToBigIntegerDeserializer: PataDataFieldDeserializer<String, BigInteger>
 {
     override fun deserialize(
         data: String?,
@@ -22,13 +23,13 @@ class PataDataFieldStringToLongDeserializer: PataDataFieldDeserializer<String, L
         trimMode: TrimMode,
         checkNullMode: CheckNullMode,
         property: KProperty<*>
-    ): Long?
+    ): BigInteger?
     {
-        return PataDataFieldDeserializerUtil.toLong(
+        return PataDataFieldDeserializerUtil.toBigInteger(
             data = data,
             checkNullMode = checkNullMode,
             property = property
         )
     }
-
 }
+

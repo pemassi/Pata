@@ -11,12 +11,6 @@ import io.pemassi.pata.enums.TrimMode
 import java.nio.charset.Charset
 import kotlin.reflect.KProperty
 
-/**
- * [PataDataFieldDeserializer] interface will be used to padding data when size is smaller than expected size.
- *
- * (IMPORTANT) Inherited class must have non-parameter constructor.
- *
- */
 interface PataDataFieldDeserializer<InputType, DataType> {
 
     @Deprecated("Please replace with new interface.", ReplaceWith("""
@@ -29,13 +23,13 @@ interface PataDataFieldDeserializer<InputType, DataType> {
             property: KProperty<InputType>,
         ): DataType?
     """), DeprecationLevel.ERROR)
-    fun deserialize(data: InputType, charset: Charset): DataType
+    fun deserialize(data: InputType?, charset: Charset): DataType
     {
         throw UnsupportedOperationException()
     }
 
     fun deserialize(
-        data: InputType,
+        data: InputType?,
         charset: Charset,
         replaceNullMode: ReplaceNullMode,
         trimMode: TrimMode,

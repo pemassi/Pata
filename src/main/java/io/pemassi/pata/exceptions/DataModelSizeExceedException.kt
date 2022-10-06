@@ -6,12 +6,26 @@
 package io.pemassi.pata.exceptions
 
 /**
- * This exception will be thrown when data size is higher than expected size.
+ * This exception is thrown when data size is higher than expected size.
+ *
+ * @param modelName Model name
+ * @param fieldName Field name
+ * @param variableName Variable name
+ * @param expectedSize Expected size
+ * @param actualSize Actual size
+ * @param data Actual Data
+ * @param dataTable DataTable (for debugging)
  */
 data class DataModelSizeExceedException(
-    val modelName: String, val dataName: String, val variableName: String, val expectedSize: Int, val actualSize: Int, val data: Any, val dataTable: String
+    val modelName: String,
+    val fieldName: String,
+    val variableName: String,
+    val expectedSize: Int,
+    val actualSize: Int,
+    val data: Any,
+    val dataTable: String,
 ): Exception("""
-    $modelName's $dataName($variableName) value is exceeded size (expected: $expectedSize, actual: $actualSize).
+    $modelName's $fieldName($variableName) value is exceeded size (expected: $expectedSize, actual: $actualSize).
     
     $dataTable
 """.trimIndent())

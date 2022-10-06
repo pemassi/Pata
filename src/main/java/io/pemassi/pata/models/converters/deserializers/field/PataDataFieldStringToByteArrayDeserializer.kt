@@ -15,13 +15,13 @@ import kotlin.reflect.KProperty
 class PataDataFieldStringToByteArrayDeserializer: PataDataFieldDeserializer<String, ByteArray>
 {
     override fun deserialize(
-        data: String,
+        data: String?,
         charset: Charset,
         replaceNullMode: ReplaceNullMode,
         trimMode: TrimMode,
         checkNullMode: CheckNullMode,
         property: KProperty<*>
-    ): ByteArray {
-        return data.encodeToByteArray()
+    ): ByteArray? {
+        return data?.toByteArray(charset)
     }
 }

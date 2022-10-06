@@ -9,25 +9,23 @@ import io.pemassi.pata.enums.CheckNullMode
 import io.pemassi.pata.enums.ReplaceNullMode
 import io.pemassi.pata.enums.TrimMode
 import io.pemassi.pata.interfaces.PataDataFieldDeserializer
-import io.pemassi.pata.models.converters.deserializers.field.abstracts.PataDataFieldDeserializerUtil
+import io.pemassi.pata.util.PataDataFieldDeserializerUtil
 import java.nio.charset.Charset
 import kotlin.reflect.KProperty
 
-class PataDataFieldStringToStringDeserializer: PataDataFieldDeserializer<String, String>
+class PataDataFieldStringToStringDeserializer: PataDataFieldDeserializer<String, Float>
 {
     override fun deserialize(
-        data: String,
+        data: String?,
         charset: Charset,
         replaceNullMode: ReplaceNullMode,
         trimMode: TrimMode,
         checkNullMode: CheckNullMode,
         property: KProperty<*>
-    ): String?
+    ): Float?
     {
-        return PataDataFieldDeserializerUtil.toString(
+        return PataDataFieldDeserializerUtil.toFloat(
             data = data,
-            replaceNullMode = replaceNullMode,
-            trimMode = trimMode,
             checkNullMode = checkNullMode,
             property = property
         )

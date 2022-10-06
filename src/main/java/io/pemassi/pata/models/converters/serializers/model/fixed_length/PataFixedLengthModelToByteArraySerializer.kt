@@ -43,7 +43,7 @@ class PataFixedLengthModelToByteArraySerializer: PataModelSerializer<FixedLength
             if (actualSize > expectedSize)
                 throw DataModelSizeExceedException(
                     modelName = this::class.simpleName ?: "",
-                    dataName = name,
+                    fieldName = name,
                     variableName = variableName,
                     expectedSize = expectedSize,
                     actualSize = actualSize,
@@ -56,7 +56,7 @@ class PataFixedLengthModelToByteArraySerializer: PataModelSerializer<FixedLength
                 if(actualSize != expectedSize)
                     throw DataModelSizeNeedMoreException(
                         modelName = this::class.simpleName ?: "",
-                        dataName = name,
+                        fieldName = name,
                         variableName = variableName,
                         expectedSize = expectedSize,
                         actualSize = actualSize,

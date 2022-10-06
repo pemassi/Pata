@@ -6,11 +6,10 @@
 package io.pemassi.pata.annotations
 
 /**
- * Declare this property is part of data model(FixedLengthDataModel).
+ * Declare this property is part of data model([DividedPataModel]).
  *
  * @param order This data field order, all data field will be sorted by [order].
- * @param name Data name
- * @param size Data Size(expected size)
+ * @param name Field name
  */
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.PROPERTY)

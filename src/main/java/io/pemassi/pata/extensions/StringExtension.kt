@@ -7,6 +7,9 @@ package io.pemassi.pata.extensions
 
 import java.nio.charset.Charset
 
+/**
+ * Padding string with [padChar] by actual byte array length in [charset] until length become [length].
+ */
 fun String.padEndByByteLength(length: Int, padChar: Char, charset: Charset): String
 {
     if (length < 0)

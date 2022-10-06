@@ -33,7 +33,7 @@ class PataFixedLengthModelFromStringDeserializer: PataModelDeserializer<String, 
             val deserializer = dataFieldDeserializers.get<String>(type)
             val inputData = deserializer.deserialize(
                 data = String(splitData, charset),
-                charset = charset ?: instance.modelCharset,
+                charset = charset,
                 replaceNullMode = instance.replaceNullMode,
                 trimMode = instance.trimMode,
                 checkNullMode = instance.checkNullMode,
