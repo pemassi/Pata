@@ -21,12 +21,15 @@ dependencies {
     //Kotlin Libs
     implementation 'org.jetbrains.kotlin:kotlin-stdlib'
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
-    
+
     //Table Print
     implementation 'de.m3y.kformat:kformat:0.9'
 
     //Extension
     implementation("com.github.pemassi:pemassi-kotlin-extensions:1.0.4")
+
+    //Slf4j
+    implementation("org.slf4j:slf4j-api:1.7.32")
 
     //JUnit
     testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'

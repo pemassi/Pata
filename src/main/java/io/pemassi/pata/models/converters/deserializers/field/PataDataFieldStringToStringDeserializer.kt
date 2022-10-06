@@ -13,19 +13,21 @@ import io.pemassi.pata.util.PataDataFieldDeserializerUtil
 import java.nio.charset.Charset
 import kotlin.reflect.KProperty
 
-class PataDataFieldStringToStringDeserializer: PataDataFieldDeserializer<String, Float>
+class PataDataFieldStringToStringDeserializer: PataDataFieldDeserializer<String, String>
 {
     override fun deserialize(
-        data: String?,
+        data: String,
         charset: Charset,
         replaceNullMode: ReplaceNullMode,
         trimMode: TrimMode,
         checkNullMode: CheckNullMode,
         property: KProperty<*>
-    ): Float?
+    ): String?
     {
-        return PataDataFieldDeserializerUtil.toFloat(
+        return PataDataFieldDeserializerUtil.toString(
             data = data,
+            replaceNullMode = replaceNullMode,
+            trimMode = trimMode,
             checkNullMode = checkNullMode,
             property = property
         )

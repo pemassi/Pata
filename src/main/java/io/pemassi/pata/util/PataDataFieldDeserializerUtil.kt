@@ -16,26 +16,19 @@ import kotlin.reflect.KProperty
 object PataDataFieldDeserializerUtil
 {
     fun toString(
-        data: String?,
+        data: String,
         replaceNullMode: ReplaceNullMode,
         trimMode: TrimMode,
         checkNullMode: CheckNullMode,
         property: KProperty<*>
     ): String?
     {
-        val nullChecked = when(checkNullMode)
-        {
-            CheckNullMode.KEEP -> return data
-            CheckNullMode.REPLACE -> data ?: ""
-            CheckNullMode.EXCEPTION -> throw DataFieldNullException(property)
-        }
-
         val trimmed = when(trimMode)
         {
-            TrimMode.KEEP -> nullChecked
-            TrimMode.BOTH_TRIM -> nullChecked.trim()
-            TrimMode.START_TRIM -> nullChecked.trimStart()
-            TrimMode.END_TRIM -> nullChecked.trimEnd()
+            TrimMode.KEEP -> data
+            TrimMode.BOTH_TRIM -> data.trim()
+            TrimMode.START_TRIM -> data.trimStart()
+            TrimMode.END_TRIM -> data.trimEnd()
         }
 
         val nullReplaced = when(replaceNullMode)
@@ -55,11 +48,16 @@ object PataDataFieldDeserializerUtil
             }
         }
 
-        return nullReplaced
+        return when(checkNullMode)
+        {
+            CheckNullMode.KEEP -> nullReplaced
+            CheckNullMode.REPLACE -> nullReplaced ?: ""
+            CheckNullMode.EXCEPTION -> nullReplaced ?: throw DataFieldNullException(property)
+        }
     }
 
     fun toLong(
-        data: String?,
+        data: String,
         checkNullMode: CheckNullMode,
         property: KProperty<*>
     ): Long?
@@ -73,7 +71,7 @@ object PataDataFieldDeserializerUtil
     }
 
     fun toInt(
-        data: String?,
+        data: String,
         checkNullMode: CheckNullMode,
         property: KProperty<*>
     ): Int?
@@ -87,7 +85,7 @@ object PataDataFieldDeserializerUtil
     }
 
     fun toFloat(
-        data: String?,
+        data: String,
         checkNullMode: CheckNullMode,
         property: KProperty<*>
     ): Float?
@@ -101,7 +99,7 @@ object PataDataFieldDeserializerUtil
     }
 
     fun toDouble(
-        data: String?,
+        data: String,
         checkNullMode: CheckNullMode,
         property: KProperty<*>
     ): Double?
@@ -115,7 +113,7 @@ object PataDataFieldDeserializerUtil
     }
 
     fun toBigDecimal(
-        data: String?,
+        data: String,
         checkNullMode: CheckNullMode,
         property: KProperty<*>
     ): BigDecimal?
@@ -129,7 +127,7 @@ object PataDataFieldDeserializerUtil
     }
 
     fun toBigInteger(
-        data: String?,
+        data: String,
         checkNullMode: CheckNullMode,
         property: KProperty<*>
     ): BigInteger?

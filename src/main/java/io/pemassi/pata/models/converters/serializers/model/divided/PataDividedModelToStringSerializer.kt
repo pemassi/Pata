@@ -25,9 +25,7 @@ class PataDividedModelToStringSerializer: PataModelSerializer<DividedPataModel, 
         propertyDatabase.forEach {
             val (property, _) = it
 
-            val variableType = property.returnType
-
-            val dataFieldSerializer = dataFieldSerializers.get<String>(variableType)
+            val dataFieldSerializer = dataFieldSerializers.get<String>(property)
 
             val value = property.getter.call(model) ?:
                 throw DataFieldNullException(property)

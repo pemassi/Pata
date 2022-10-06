@@ -16,45 +16,32 @@ import kotlin.reflect.KProperty
 class PataDataFieldByteArrayToByteArrayDeserializer: PataDataFieldDeserializer<ByteArray, ByteArray>
 {
     override fun deserialize(
-        data: ByteArray?,
+        data: ByteArray,
         charset: Charset,
         replaceNullMode: ReplaceNullMode,
         trimMode: TrimMode,
         checkNullMode: CheckNullMode,
         property: KProperty<*>
     ): ByteArray? {
-
-        val nullChecked = when(checkNullMode)
+        val nullReplaced = when(replaceNullMode)
         {
-            CheckNullMode.KEEP -> data
-            CheckNullMode.REPLACE -> data ?: ByteArray(0)
-            CheckNullMode.EXCEPTION -> throw DataFieldNullException(property)
-        }
-
-        val nullReplaced = if(nullChecked != null)
-        {
-            when(replaceNullMode)
-            {
-                ReplaceNullMode.KEEP -> nullChecked
-                ReplaceNullMode.WHEN_EMPTY -> {
-                    if(nullChecked.isEmpty()) {
-                        null
-                    }
-                    else {
-                        nullChecked
-                    }
+            ReplaceNullMode.KEEP -> data
+            ReplaceNullMode.WHEN_EMPTY -> {
+                if(data.isEmpty()) {
+                    null
                 }
-                ReplaceNullMode.WHEN_BLANK -> nullChecked
+                else {
+                    data
+                }
             }
-        }
-        else
-        {
-            // afterCheckNull is always null in this case
-            // but keep code style
-            @Suppress("KotlinConstantConditions")
-            nullChecked
+            ReplaceNullMode.WHEN_BLANK -> data
         }
 
-        return nullReplaced
+        return when(checkNullMode)
+        {
+            CheckNullMode.KEEP -> nullReplaced
+            CheckNullMode.REPLACE -> nullReplaced ?: ByteArray(0)
+            CheckNullMode.EXCEPTION -> nullReplaced ?: throw DataFieldNullException(property)
+        }
     }
 }

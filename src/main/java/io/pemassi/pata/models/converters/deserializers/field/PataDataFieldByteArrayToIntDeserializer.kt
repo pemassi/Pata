@@ -16,7 +16,7 @@ import kotlin.reflect.KProperty
 class PataDataFieldByteArrayToIntDeserializer: PataDataFieldDeserializer<ByteArray, Int>
 {
     override fun deserialize(
-        data: ByteArray?,
+        data: ByteArray,
         charset: Charset,
         replaceNullMode: ReplaceNullMode,
         trimMode: TrimMode,
@@ -25,7 +25,7 @@ class PataDataFieldByteArrayToIntDeserializer: PataDataFieldDeserializer<ByteArr
     ): Int?
     {
         return PataDataFieldDeserializerUtil.toInt(
-            data = if(data == null) null else String(data, charset),
+            data = String(data, charset),
             checkNullMode = checkNullMode,
             property = property
         )

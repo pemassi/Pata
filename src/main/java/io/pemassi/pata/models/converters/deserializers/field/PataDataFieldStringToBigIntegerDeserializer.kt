@@ -17,7 +17,7 @@ import kotlin.reflect.KProperty
 class PataDataFieldStringToBigIntegerDeserializer: PataDataFieldDeserializer<String, BigInteger>
 {
     override fun deserialize(
-        data: String?,
+        data: String,
         charset: Charset,
         replaceNullMode: ReplaceNullMode,
         trimMode: TrimMode,

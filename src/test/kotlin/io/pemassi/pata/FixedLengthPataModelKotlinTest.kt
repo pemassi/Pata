@@ -118,6 +118,7 @@ internal class FixedLengthPataModelKotlinTest: FreeSpec()
                                 @FixedDataField(1, "A", 5)
                                 var a: String? = null,
                             ): FixedLengthPataModel<String>(
+                                replaceNullMode = ReplaceNullMode.WHEN_BLANK,
                                 checkNullMode = CheckNullMode.EXCEPTION
                             )
                             val data = "     "

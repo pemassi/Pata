@@ -16,7 +16,7 @@ import kotlin.reflect.KProperty
 class PataDataFieldStringToDoubleDeserializer: PataDataFieldDeserializer<String, Double>
 {
     override fun deserialize(
-        data: String?,
+        data: String,
         charset: Charset,
         replaceNullMode: ReplaceNullMode,
         trimMode: TrimMode,

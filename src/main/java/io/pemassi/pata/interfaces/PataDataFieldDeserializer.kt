@@ -23,13 +23,13 @@ interface PataDataFieldDeserializer<InputType, DataType> {
             property: KProperty<InputType>,
         ): DataType?
     """), DeprecationLevel.ERROR)
-    fun deserialize(data: InputType?, charset: Charset): DataType
+    fun deserialize(data: InputType, charset: Charset): DataType
     {
         throw UnsupportedOperationException()
     }
 
     fun deserialize(
-        data: InputType?,
+        data: InputType,
         charset: Charset,
         replaceNullMode: ReplaceNullMode,
         trimMode: TrimMode,

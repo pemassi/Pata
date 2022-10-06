@@ -32,10 +32,9 @@ class PataFixedLengthModelToStringSerializer: PataModelSerializer<FixedLengthPat
             val name = annotation.name
             val expectedSize = annotation.size
             val variableName = property.name
-            val variableType = property.returnType.withNullability(false)
 
             //Try to get serializer
-            val dataFieldSerializer = dataFieldSerializers.get<String>(variableType)
+            val dataFieldSerializer = dataFieldSerializers.get<String>(property)
 
             //Get Field Value
             val value = property.getter.call(model) ?:

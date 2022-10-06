@@ -30,9 +30,8 @@ class PataFixedLengthModelToByteArraySerializer: PataModelSerializer<FixedLength
             val name = annotation.name
             val expectedSize = annotation.size
             val variableName = property.name
-            val variableType = property.returnType
 
-            val dataFieldSerializer = dataFieldSerializers.get<ByteArray>(variableType)
+            val dataFieldSerializer = dataFieldSerializers.get<ByteArray>(property)
 
             val value = property.getter.call(model) ?:
                 throw DataFieldNullException(property)
