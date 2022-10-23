@@ -23,7 +23,7 @@ import kotlin.reflect.full.memberProperties
 /**
  * Declare this class or data class is fixed length data model.
  *
- * The property, that you want use part of data, should be annotated with [FixedDataField].
+ * The property, that you want to use part of data, should be annotated with [FixedDataField].
  */
 abstract class FixedLengthPataModel<DataType>(
     override val modelCharset: Charset = Charset.defaultCharset(),
@@ -108,8 +108,6 @@ abstract class FixedLengthPataModel<DataType>(
 
     companion object
     {
-        private val cachedPropertyDatabase by lazy {
-            HashMap<KClass<*>, List<Pair<KMutableProperty<*>, FixedDataField>>>()
-        }
+        private val cachedPropertyDatabase = HashMap<KClass<*>, List<Pair<KMutableProperty<*>, FixedDataField>>>()
     }
 }

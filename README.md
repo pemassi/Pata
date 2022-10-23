@@ -9,9 +9,6 @@ Data Model Builder for Kotlin(JVM)
 ## Reason Why I Made This
 Many projects usually use pre-made protocols(ex. HTTP, WebSocket), but sometimes, a developer needs to make their own protocols that communicate on TCP/IP layer, especially, `Fixed-Length Protocol`. With this library, the developers are able to define the `Protocol Data Model(aka. Data Model)`, serialize from `data model` to `String`, deserialize from `String` to `data model` with fewer efforts. Also, it has useful side functions such as detailed logging.
 
-## Supports Korean
-Since I am Korean, `Pata` supports `Korean`. Especially `Korean` spend 2 bytes on `EUC-KR` encoding or more than that on the other encoding, also this feature is followed to some other languages. Because of this, many Korean developers are having a hard time dealing with counting length for `Fixed-Length Protocol`. This library will help with this without any action.
-
 ## Supports Model
 - FixedLength
 - Divided
@@ -150,8 +147,19 @@ fun main()
 
 There we go, it works! Don't forget to make and register `Deserializer` also to deserialize it.
 
-## What About Speed?
-For now, I will not care about the speed to focus on making some other features.
+## Speed Test
+> Tested on Apple M1 Pro, 32GB
+> 
+> Test code on `src/test/kotlin/io/pemassi/pata/PataTest.kt`
+
+### Fixed-Length Protocol
+|       Method       | Serialize(avgs) | Deserialize(avgs) |
+|:------------------:|:---------------:|:-----------------:|
+|       Manual       |    639 nanos    |     183 nanos     |
+| Pata(w/o instance) |    555 nanos    |    1897 nanos     |
+| Pata(w/ instance)  |    555 nanos    |     267 nanos     |
+* w/o instance: Not giving `oldInstance` param
+* w/ instance: Giving `oldInstance` param
 
 ## Setup
 Add the JitPack repository in your build.gradle (top level module):
@@ -167,6 +175,6 @@ allprojects {
 And add next dependencies in the build.gradle of the module:
 ```gradle
 dependencies {
-    implementation 'com.github.pemassi:Pata:2.1.1'
+    implementation 'com.github.pemassi:Pata:x.y.z'
 }
 ```

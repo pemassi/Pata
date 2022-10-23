@@ -19,6 +19,7 @@ import io.pemassi.pata.models.map.PataDataFieldSerializerMap
 import io.pemassi.pata.models.map.PataModelDeserializerMap
 import io.pemassi.pata.models.map.PataModelSerializerMap
 import java.nio.charset.Charset
+import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
 class Pata
