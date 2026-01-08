@@ -5,6 +5,7 @@
 
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.7.0'
+    id 'jacoco'
 }
 
 group 'io.pemassi'
@@ -43,4 +44,24 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+jacoco {
+    toolVersion = "0.8.8"
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+        csv.required = false
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [])
+        }))
+    }
 }
